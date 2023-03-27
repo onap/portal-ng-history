@@ -1,0 +1,65 @@
+---
+project: 'portal_ng_history'
+project_creation_date: '2023-03-20'
+project_category: ''
+lifecycle_state: 'Incubation'
+project_lead: &portal_ng_history_ptl
+    name: 'Georg Schweflinghaus'
+    email: 'georg.schweflinghaus@telekom.de'
+    company: 'Deutsche Telekom AG'
+    id: 'gejosch'
+    timezone: "Europe/Berlin"
+primary_contact: *portal_ng_history_ptl
+issue_tracking:
+    type: 'jira'
+    url: 'https://jira.onap.org/projects/portal-ng'
+    key: 'portal_ng'
+mailing_list:
+    type: 'groups.io'
+    url: 'technical-discuss@lists.onap.org'
+    tag: '[]'
+realtime_discussion: ''
+meetings:
+    - type: 'gotomeeting+irc'
+      agenda: 'https://wiki.onap.org/display/'
+      url: ''
+      server: 'freenode.net'
+      channel: '#onap'
+      repeats: ''
+      time: ''
+repositories:
+    - portal-ng/history
+committers:
+    - <<: *portal_ng_history_ptl
+    - name: 'Andreas Geissler'
+      email: 'andreas-geissler@telekom.de'
+      company: 'Deutsche Telekom'
+      id: 'andreasgeissler'
+      timezone: 'Europe/Berlin'
+    - name: 'Fiete Ostkamp'
+      email: 'fiete.ostkamp@telekom.de'
+      company: 'Deutsche Telekom AG'
+      id: 'fostkamp'
+      timezone: "Europe/Berlin"
+    - name: 'Stefan Rothmajer'
+      email: 'stefan.rothmajer@telekom.com'
+      company: 'Deutsche Telekom AG'
+      id: 'stephaaan'
+      timezone: "Europe/Bratislava"
+    - name: 'Stefan Dierichs'
+      email: 's.dierichs@telekom.de'
+      company: 'Deutsche Telekom AG'
+      id: 'sdierich'
+      timezone: "Europe/Berlin"
+    - name: 'Marian Vaclavik'
+      email: 'marian.vaclavik@telekom.com'
+      company: 'Deutsche Telekom AG'
+      id: 'marian.vaclavik'
+      timezone: "Europe/Bratislava"
+tsc:
+    # yamllint disable rule:line-length
+    approval: 'https://wiki.onap.org/pages/viewpage.action?pageId=158662775'
+    changes:
+        - type: ''
+          name: ''
+          link: ''
