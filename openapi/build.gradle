@@ -1,0 +1,53 @@
+plugins {
+    id 'org.onap.portal.history.java-application-conventions'
+    id 'org.openapi.generator'
+}
+
+ext {
+    openapiVersion = '6.0.1'
+}
+
+dependencies {
+    implementation "org.openapitools:openapi-generator:$openapiVersion"
+    // NOTE(KE) needed to add these dependencies, check in next version whether its removable...
+    // https://github.com/OpenAPITools/openapi-generator/issues/8360
+    compileOnly "io.springfox:springfox-swagger2:3.0.0"
+}
+
+// https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-gradle-plugin/README.adoc
+openApiGenerate {
+    generatorName = "spring"
+    library = "spring-boot"
+    inputSpec = "$projectDir/src/main/resources/api/api.yml"
+    outputDir = "$buildDir/openapi"
+    configOptions = [
+            openApiNullable: "false",
+            skipDefaultInterface: "true",
+            dateLibrary: "java8",
+            interfaceOnly: "true",
+            useTags: "true",
+            useOptional: "true",
+            reactive: "true"
+    ]
+    generateApiTests = false
+    generateApiDocumentation = false
+    generateModelTests = false
+    generateModelDocumentation = false
+    invokerPackage = "org.onap.portal.history.openapi"
+    apiPackage = "org.onap.portal.history.openapi.api"
+    modelPackage = "org.onap.portal.history.openapi.model"
+}
+
+compileJava {
+    dependsOn tasks.openApiGenerate
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += file("$buildDir/openapi/src/main/java")
+        }
+    }
+}
+
+

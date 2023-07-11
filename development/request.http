@@ -1,0 +1,63 @@
+
+POST http://localhost:8080/auth/realms/ONAP/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=portal-app&client_secret=&scope=openid&grant_type=password&username=onap-admin&password=password
+> {%
+ client.global.set("access_token", response.body.access_token);
+ client.global.set("id_token", response.body.id_token);
+ %}
+
+###
+
+GET http://localhost:8080/auth/realms/ONAP/protocol/openid-connect/userinfo
+Authorization: Bearer {{access_token}}
+X-Auth-Identity: Bearer {{id_token}}
+
+> {%
+ client.global.set("user_id", response.body.sub);
+ %}
+
+###
+
+POST http://localhost:9002/v1/actions/{{user_id}}
+Accept: application/json
+Authorization: Bearer {{access_token}}
+X-Auth-Identity: Bearer {{id_token}}
+X-Request-Id: {{$uuid}}
+Content-Type: application/json
+
+{
+  "userId": "{{user_id}}",
+  "actionCreatedAt": "{{$timestamp}}",
+  "action": {
+    "type": "DELETE",
+    "entity": "USERADMINISTRATION",
+    "entityParams": {
+      "userName": "uli",
+      "userId": "{{$randomInt}}"
+    }
+  }
+}
+
+###
+
+GET http://localhost:9002/v1/actions/{{user_id}}?page=1&pageSize=10&showLastHours=1
+X-Request-Id: {{$uuid}}
+Accept: application/json
+Authorization: Bearer {{access_token}}
+X-Auth-Identity: Bearer {{id_token}}
+
+###
+
+GET http://localhost:9002/v1/actions?page=1&pageSize=10&showLastHours=1
+X-Request-Id: {{$uuid}}
+Accept: application/json
+Authorization: Bearer {{access_token}}
+X-Auth-Identity: Bearer {{id_token}}
+
+###
+
+
+
+

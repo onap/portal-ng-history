@@ -1,0 +1,39 @@
+// Source: https://github.com/abesto/zipkin/blob/8cbc69bfcd85e89c1be43f1038ecf7c200245933/gradle/verify-licenses.gradle
+/**
+ * Gradle plugin used to verify that all dependencies of a project use allowed licenses.
+ * Usage:
+ *   apply from: "${rootDir}/gradle/verify-licenses.gradle"
+ *
+ * The list of allowed licenses can be modified via `licenseBlackList` from project definitions.
+ */
+
+ext.licenseBlackList = [
+		'No license found',
+		'GNU GENERAL PUBLIC LICENSE, Version 3',
+		'GNU GENERAL PUBLIC LICENSE, V3.0'
+]
+
+// Verify that all dependency licenses are ones we like
+task verifyLicenses {
+	description "Verify that none of the dependencies use black-listed licenses."
+	dependsOn 'downloadLicenses'
+
+	doLast {
+		def xml = new XmlParser().parse('app/build/reports/license/license-dependency.xml')
+		def fail = false
+		xml.each { license ->
+			if (licenseBlackList*.toLowerCase().contains(license.@name.toLowerCase())) {
+				def depStrings = []
+				license.dependency.each { depStrings << it.text() }
+				logger.error(
+						"License \"${license.@name}\" is not on the list of allowed licenses. " +\
+                        "The dependencies using it: ${depStrings}")
+				fail = true
+			}
+		}
+		if (fail) {
+			throw new GradleException("License verification failed.")
+		}
+	}
+}
+check.dependsOn verifyLicenses

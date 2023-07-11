@@ -1,0 +1,40 @@
+version: '3'
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  postgres:
+      image: "${POSTGRES_IMAGE}:${POSTGRES_VERSION}"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: ${KEYCLOAK_DB}
+        POSTGRES_USER: ${KEYCLOAK_DB_USER}
+        POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+  keycloak:
+      image: "${KEYCLOAK_IMAGE}:${KEYCLOAK_VERSION}"
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: ${KEYCLOAK_DB}
+        DB_USER: ${KEYCLOAK_DB_USER}
+        DB_SCHEMA: public
+        DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+        KEYCLOAK_USER: ${KEYCLOAK_USER}
+        KEYCLOAK_PASSWORD: ${KEYCLOAK_PASSWORD}
+        KEYCLOAK_IMPORT: /config/onap-realm.json
+      ports:
+        - 8080:8080
+      volumes:
+        - ./config:/config
+      depends_on:
+        - postgres
+  mongo:
+    image: "${MONGO_IMAGE}:${MONGO_VERSION}"
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}

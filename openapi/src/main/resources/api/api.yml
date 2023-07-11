@@ -1,0 +1,354 @@
+openapi: 3.0.2
+info:
+  title: History API
+  version: '1.0'
+  description: API to provide actions for portal-history
+servers:
+  - url: 'http://localhost:9002/{base}'
+    variables:
+      base:
+        default: 'portal-history'
+        description: Basepath
+tags:
+  - name: actions
+paths:
+  '/v1/actions/{userId}':
+    parameters:
+      - $ref: '#/components/parameters/userIdPathParam'
+      - $ref: '#/components/parameters/xRequestIdHeader'
+    get:
+      summary: Retrieve all actions for a specific user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionsListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+      operationId: getActions
+      parameters:
+        - $ref: '#/components/parameters/pageQueryParam'
+        - $ref: '#/components/parameters/pageSizeQueryParam'
+        - schema:
+            type: integer
+            format: int32
+          in: query
+          name: showLastHours
+          description: Get all actions within the last X hours.
+      description: Get actions for the given userId
+      tags:
+        - actions
+    post:
+      summary: Create an action for a given user
+      operationId: createAction
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActionRequest'
+        description: Only one action in each POST request
+      description: Create a user action
+      tags:
+        - actions
+    delete:
+      summary: Delete user actions after given time
+      operationId: deleteActions
+      parameters:
+        - schema:
+            type: integer
+            format: int32
+          in: query
+          name: deleteAfterHours
+          description: If parameter is given actions older than value will be deleted for the user
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+      tags:
+        - actions
+      description: Delete user actions after given time
+  /v1/actions:
+    get:
+      summary: Retrieve all actions from the portal with an optional timeframe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionsListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+      operationId: listActions
+      parameters:
+        - $ref: '#/components/parameters/xRequestIdHeader'
+        - $ref: '#/components/parameters/pageQueryParam'
+        - $ref: '#/components/parameters/pageSizeQueryParam'
+        - schema:
+            type: integer
+            format: int32
+          in: query
+          name: showLastHours
+          description: Get all actions within the last X hours.
+      description: Get portal actions from all users
+      tags:
+        - actions
+components:
+  parameters:
+    xRequestIdHeader:
+      name: X-Request-Id
+      in: header
+      description: The unique identifier of the request
+      required: true
+      schema:
+        type: string
+    pageQueryParam:
+      name: page
+      in: query
+      description: Page index (1..N)
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        default: 1
+    pageSizeQueryParam:
+      name: pageSize
+      in: query
+      description: The size of the page to be returned
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 5000
+        default: 10
+    userIdPathParam:
+      name: userId
+      in: path
+      description: User ID
+      required: true
+      schema:
+        $ref: '#/components/schemas/ValidString'
+  schemas:
+    ActionResponse:
+      title: ActionResponse
+      type: object
+      properties:
+        actionCreatedAt:
+          type: string
+          format: date-time
+        action:
+          type: object
+        saveInterval:
+          type: integer
+          format: int32
+      required:
+        - action
+        - actionCreatedAt
+    CreateActionRequest:
+      title: CreateActionRequest
+      type: object
+      properties:
+        userId:
+          type: string
+        actionCreatedAt:
+          type: string
+          format: date-time
+        action:
+          type: object
+      required:
+        - userId
+        - actionCreatedAt
+        - action
+    ActionsListResponse:
+      title: ActionsListResponse
+      type: object
+      properties:
+        actionsList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionResponse'
+        totalCount:
+          type: integer
+          format: int32
+          description: Total number of items matching criteria
+      required:
+        - actionsList
+        - totalCount
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          description: |
+            A URI reference that uniquely identifies the problem type only in the context of the provided API. Opposed to the specification in RFC-7807, it is neither recommended to be dereferencable and point to a human-readable documentation nor globally unique for the problem type.
+          default: 'about:blank'
+          example: /problem/connection-error
+        title:
+          type: string
+          description: |
+            A short summary of the problem type. Written in English and readable for engineers, usually not suited for non technical stakeholders and not localized.
+          example: Service Unavailable
+        status:
+          type: integer
+          format: int32
+          description: |
+            The HTTP status code generated by the origin server for this occurrence of the problem.
+          minimum: 100
+          maximum: 600
+          exclusiveMaximum: true
+          example: 503
+        detail:
+          type: string
+          description: |
+            A human readable explanation specific to this occurrence of the problem that is helpful to locate the problem and give advice on how to proceed. Written in English and readable for engineers, usually not suited for non technical stakeholders and not localized.
+          example: Connection to database timed out
+        instance:
+          type: string
+          format: uri-reference
+          description: |
+            A URI reference that identifies the specific occurrence of the problem, e.g. by adding a fragment identifier or sub-path to the problem type. May be used to locate the root of this problem in the source code.
+          example: /problem/connection-error#token-info-read-timed-out
+    ValidString:
+      type: string
+      pattern: '[\w,/!=§#@€:µ.*+?'' \-\u00C0-\u017F]*'
+  responses:
+    BadRequest:
+      description: '400: Bad Request'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
+    Unauthorized:
+      description: '401: Unauthorized'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
+    Forbidden:
+      description: '403: Forbidden'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
+    NotFound:
+      description: '404: Not Found'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
+    NotAllowed:
+      description: '405: Method Not Allowed'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
+    Conflict:
+      description: '409: Conflict'
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
+    BadGateway:
+      description: Bad Gateway
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          schema:
+            type: string
+          description: A <uuid4> in each response
