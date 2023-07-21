@@ -4,14 +4,20 @@ plugins {
 }
 
 ext {
-    openapiVersion = '6.0.1'
+    openapiVersion = '6.6.0'
 }
 
 dependencies {
     implementation "org.openapitools:openapi-generator:$openapiVersion"
-    // NOTE(KE) needed to add these dependencies, check in next version whether its removable...
-    // https://github.com/OpenAPITools/openapi-generator/issues/8360
-    compileOnly "io.springfox:springfox-swagger2:3.0.0"
+
+    constraints {
+        implementation('io.swagger.core.v3:swagger-annotations:2.2.5') {
+            because 'there is a dependency conflict between swagger-parser versions 2 and 3 (https://github.com/OpenAPITools/openapi-generator/issues/14901)'
+        }
+        implementation('javax.validation:validation-api:2.0.1.Final') {
+            because 'because min max validation wouldnt work with older version of dependency'
+        }
+    }
 }
 
 // https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-gradle-plugin/README.adoc
@@ -21,13 +27,14 @@ openApiGenerate {
     inputSpec = "$projectDir/src/main/resources/api/api.yml"
     outputDir = "$buildDir/openapi"
     configOptions = [
-            openApiNullable: "false",
-            skipDefaultInterface: "true",
-            dateLibrary: "java8",
-            interfaceOnly: "true",
-            useTags: "true",
-            useOptional: "true",
-            reactive: "true"
+        hideGenerationTimestamp: "true",
+        openApiNullable: "false",
+        skipDefaultInterface: "true",
+        dateLibrary: "java8",
+        interfaceOnly: "true",
+        useTags: "true",
+        useOptional: "true",
+        reactive: "true"
     ]
     generateApiTests = false
     generateApiDocumentation = false

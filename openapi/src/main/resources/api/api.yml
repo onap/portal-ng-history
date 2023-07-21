@@ -4,11 +4,7 @@ info:
   version: '1.0'
   description: API to provide actions for portal-history
 servers:
-  - url: 'http://localhost:9002/{base}'
-    variables:
-      base:
-        default: 'portal-history'
-        description: Basepath
+  - url: 'http://localhost:9002'
 tags:
   - name: actions
 paths:

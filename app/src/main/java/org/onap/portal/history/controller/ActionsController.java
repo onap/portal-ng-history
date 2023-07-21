@@ -79,7 +79,7 @@ public class ActionsController implements ActionsApi {
   }
 
   @Override
-  public Mono<ResponseEntity<ActionsListResponse>> listActions(String xRequestId, @Valid Optional<@Min(1) Integer> page, @Valid Optional<@Min(1) @Max(5000) Integer> pageSize, @Valid Optional<Integer> showLastHours, ServerWebExchange exchange) {
+  public Mono<ResponseEntity<ActionsListResponse>> listActions(String xRequestId, Optional<Integer> page, Optional<Integer> pageSize, Optional<Integer> showLastHours, ServerWebExchange exchange) {
 
     return actionsService
       .listActions(page.orElse(1), pageSize.orElse(10), showLastHours.orElse(portalHistoryConfig.getSaveInterval()), portalHistoryConfig.getSaveInterval(), xRequestId)
