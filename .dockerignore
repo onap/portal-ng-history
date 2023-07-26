@@ -1,4 +1,0 @@
-# Ignore everything
-*
-# but the build jar
-!/app/build/libs

@@ -1,8 +1,7 @@
 FROM eclipse-temurin:17 as builder
 COPY . ./history
 WORKDIR /history
-
-RUN ./gradlew build
+RUN ./gradlew assemble
 
 FROM eclipse-temurin:17-jre-alpine
 ARG JAR_FILE=/history/app/build/libs/app.jar
