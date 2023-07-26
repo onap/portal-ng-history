@@ -1,0 +1,10 @@
+Code-Review+2: Fiete Ostkamp <fiete.ostkamp@telekom.de>
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Code-Review+2: Andreas Geissler <andreas-geissler@telekom.de>
+Verified+1: Fiete Ostkamp <fiete.ostkamp@telekom.de>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Submitted-by: Andreas Geissler <andreas-geissler@telekom.de>
+Submitted-at: Wed, 26 Jul 2023 07:30:38 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/portal-ng/history/+/135563
+Project: portal-ng/history
+Branch: refs/heads/master
