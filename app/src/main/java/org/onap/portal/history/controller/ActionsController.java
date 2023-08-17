@@ -23,10 +23,6 @@ package org.onap.portal.history.controller;
 
 import java.util.Optional;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-
 import org.onap.portal.history.configuration.PortalHistoryConfig;
 import org.onap.portal.history.openapi.api.ActionsApi;
 import org.onap.portal.history.openapi.model.ActionResponse;

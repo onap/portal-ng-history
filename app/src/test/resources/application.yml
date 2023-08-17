@@ -3,9 +3,6 @@ server:
   address: 0.0.0.0
 
 spring:
-  mongodb:
-    embedded:
-      version: 3.2.8
   jackson:
     serialization:
       # needed for serializing objects of type object
@@ -15,6 +12,12 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:${wiremock.server.port}/auth/realms/ONAP/protocol/openid-connect/certs #Keycloak Endpoint
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 5.0.15
 
 portal-history:
   realm: ONAP

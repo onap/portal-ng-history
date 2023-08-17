@@ -24,7 +24,6 @@ package org.onap.portal.history.configuration;
 import org.onap.portal.history.services.ActionsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,6 @@ public class SchedulerConfig {
   private final ActionsService actionsService;
   private final PortalHistoryConfig portalHistoryConfig;
 
-  @Autowired
   public SchedulerConfig(ActionsService actionsService, PortalHistoryConfig portalHistoryConfig){
     this.actionsService = actionsService;
     this.portalHistoryConfig = portalHistoryConfig;

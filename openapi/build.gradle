@@ -4,18 +4,14 @@ plugins {
 }
 
 ext {
-    openapiVersion = '6.6.0'
+    openapiVersion = '7.0.0-beta'
 }
 
 dependencies {
     implementation "org.openapitools:openapi-generator:$openapiVersion"
-
     constraints {
-        implementation('io.swagger.core.v3:swagger-annotations:2.2.5') {
-            because 'there is a dependency conflict between swagger-parser versions 2 and 3 (https://github.com/OpenAPITools/openapi-generator/issues/14901)'
-        }
-        implementation('javax.validation:validation-api:2.0.1.Final') {
-            because 'because min max validation wouldnt work with older version of dependency'
+        implementation('jakarta.validation:jakarta.validation-api:3.0.2') {
+            because 'because min max validation wouldnt work with older versions of dependency'
         }
     }
 }
@@ -34,7 +30,8 @@ openApiGenerate {
         interfaceOnly: "true",
         useTags: "true",
         useOptional: "true",
-        reactive: "true"
+        reactive: "true",
+        useSpringBoot3: "true"
     ]
     generateApiTests = false
     generateApiDocumentation = false

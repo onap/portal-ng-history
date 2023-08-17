@@ -24,6 +24,7 @@ package org.onap.portal.history.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 import java.net.URI;
 
@@ -47,8 +48,8 @@ public class Logger {
    * @param xRequestId from the request header
    * @param code http status of the response
    */
-  public static void responseLog(String xRequestId, HttpStatus code) {
-    log.info("Portal-history - response - X-Request-Id {} {}", xRequestId, code);
+  public static void responseLog(String xRequestId, HttpStatusCode httpStatusCode) {
+    log.info("Portal-history - response - X-Request-Id {} {}", xRequestId, httpStatusCode);
   }
 
   /**
