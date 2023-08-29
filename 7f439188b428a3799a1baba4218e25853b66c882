@@ -1,0 +1,8 @@
+Code-Review+2: Stefan Dierichs <s.dierichs@telekom.de>
+Verified+1: Stefan Dierichs <s.dierichs@telekom.de>
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Submitted-by: Fiete Ostkamp <fiete.ostkamp@telekom.de>
+Submitted-at: Tue, 29 Aug 2023 09:01:07 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/portal-ng/history/+/135845
+Project: portal-ng/history
+Branch: refs/heads/master
