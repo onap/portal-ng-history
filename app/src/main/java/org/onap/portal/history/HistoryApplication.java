@@ -25,15 +25,15 @@
 package org.onap.portal.history;
 
 
-import org.onap.portal.history.configuration.PortalHistoryConfig;
+import org.onap.portal.history.configuration.HistoryConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@EnableConfigurationProperties(PortalHistoryConfig.class)
+@EnableConfigurationProperties(HistoryConfig.class)
 @SpringBootApplication
-public class PortalHistoryApplication {
+public class HistoryApplication {
     public static void main(String[] args) {
-        SpringApplication.run(PortalHistoryApplication.class, args);
+        SpringApplication.run(HistoryApplication.class, args);
     }
 }

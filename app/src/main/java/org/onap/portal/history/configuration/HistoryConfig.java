@@ -27,8 +27,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import jakarta.validation.constraints.NotBlank;
 
 @Data
-@ConfigurationProperties("portal-history")
-public class PortalHistoryConfig {
+@ConfigurationProperties("history")
+public class HistoryConfig {
 
   @NotBlank
   private final Integer saveInterval;

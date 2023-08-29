@@ -72,7 +72,7 @@ jacocoTestReport {
 
 application {
     // Define the main class for the application.
-    mainClass = 'org.onap.portal.history.PortalHistoryApplication'
+    mainClass = 'org.onap.portal.history.HistoryApplication'
 }
 
 sourceCompatibility = '17'
@@ -94,7 +94,7 @@ configurations.implementation.setCanBeResolved(true)
 springBoot {
     buildInfo {
         properties {
-            artifact = "org-onap-portal-history"
+            artifact = "org-onap-portalng-history"
             version = rootProject.file('version').text.trim()
             group = rootProject.group
             name = "History service that saves user actions"

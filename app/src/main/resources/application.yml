@@ -1,8 +1,10 @@
 server:
-    port: 9002
-    address: 0.0.0.0
+  port: 9002
+  address: 0.0.0.0
 
 spring:
+  application:
+    name: history
   jackson:
     serialization:
       # needed for serializing objects of type object
@@ -14,13 +16,13 @@ spring:
           jwk-set-uri: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs #Keycloak Endpoint
   data:
     mongodb:
-      database: ${PORTALHISTORY_DATABASE}
-      host: ${PORTALHISTORY_HOST}
-      port: ${PORTALHISTORY_PORT}
-      username: ${PORTALHISTORY_USERNAME}
-      password: ${PORTALHISTORY_PASSWORD}
+      database: ${HISTORY_DATABASE}
+      host: ${HISTORY_HOST}
+      port: ${HISTORY_PORT}
+      username: ${HISTORY_USERNAME}
+      password: ${HISTORY_PASSWORD}
 
-portal-history:
+history:
   save-interval: 72
   delete-interval: 0 0 * * * *
 

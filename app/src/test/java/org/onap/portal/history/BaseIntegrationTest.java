@@ -55,10 +55,10 @@ public abstract class BaseIntegrationTest {
 //  }
 
   @LocalServerPort protected int port;
-  @Value("${portal-history.realm}")
+  @Value("${history.realm}")
   protected String realm;
 
-  @Value("${portal-history.delete-interval}")
+  @Value("${history.delete-interval}")
   protected String deleteInterval;
 
   @Autowired protected ObjectMapper objectMapper;

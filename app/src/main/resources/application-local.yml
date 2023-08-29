@@ -1,6 +1,6 @@
 server:
-    port: 9002
-    address: 0.0.0.0
+  port: 9002
+  address: 0.0.0.0
 
 spring:
   jackson:
@@ -14,13 +14,13 @@ spring:
           jwk-set-uri: http://localhost:8080/auth/realms/ONAP/protocol/openid-connect/certs #Keycloak Endpoint
   data:
     mongodb:
-      database: portal_history
+      database: history
       host: localhost
       port: 27017
       username: root
       password: password
 
-portal-history:
+history:
   save-interval: 72
   delete-interval: 0 * * * * *
 

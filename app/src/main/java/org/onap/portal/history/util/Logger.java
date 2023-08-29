@@ -40,7 +40,7 @@ public class Logger {
    * @param path which is called be the request
    */
   public static void requestLog(String xRequestId, HttpMethod methode, URI path) {
-    log.info("Portal-history - request - X-Request-Id {} {} {}", xRequestId, methode, path);
+    log.info("History - request - X-Request-Id {} {} {}", xRequestId, methode, path);
   }
 
   /**
@@ -49,7 +49,7 @@ public class Logger {
    * @param code http status of the response
    */
   public static void responseLog(String xRequestId, HttpStatusCode httpStatusCode) {
-    log.info("Portal-history - response - X-Request-Id {} {}", xRequestId, httpStatusCode);
+    log.info("History - response - X-Request-Id {} {}", xRequestId, httpStatusCode);
   }
 
   /**
@@ -60,6 +60,6 @@ public class Logger {
    */
   public static void errorLog(String xRequestId, String msg, String id) {
     log.info(
-        "Portal-history - error - X-Request-Id {} {} {} not found", xRequestId, msg, id);
+        "History - error - X-Request-Id {} {} {} not found", xRequestId, msg, id);
   }
 }

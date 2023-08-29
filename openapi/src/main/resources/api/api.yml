@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: History API
   version: '1.0'
-  description: API to provide actions for portal-history
+  description: API to provide actions for history
 servers:
   - url: 'http://localhost:9002'
 tags:

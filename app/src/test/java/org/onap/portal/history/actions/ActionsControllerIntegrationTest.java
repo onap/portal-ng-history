@@ -60,7 +60,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
   @Autowired
   private ActionsRepository repository;
 
-  // @Value("${portal-history.save-interval}")
+  // @Value("${history.save-interval}")
   protected Integer saveInterval = 72;
 
   @BeforeEach

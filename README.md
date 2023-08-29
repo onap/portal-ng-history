@@ -1,4 +1,4 @@
-# Portal-history
+# History
 This microservice manages the user actions for the `ui` frontend application. It is a Spring Boot application that is build upon MongoDB and Webflux.
 
 ## Build
@@ -29,14 +29,14 @@ To start the service execute the `run.sh` in the development folder:
 development/run.sh
 ```
 
-Example request against the portal-prefs service can be run in your preferred IDE with the `request.http file from the development folder.
+Example request against the preferences service can be run in your preferred IDE with the `request.http file from the development folder.
 
 You can access the Keycloak UI via browser.
 URL: http://localhost:8080
 **username:** admin  
 **password:** password
 
-To stop the portal-prefs service, Keycloak and the databases run:
+To stop the preferences service, Keycloak and the databases run:
 ```sh
 development/stop.sh
 ```

@@ -23,7 +23,7 @@ package org.onap.portal.history.controller;
 
 import java.util.Optional;
 
-import org.onap.portal.history.configuration.PortalHistoryConfig;
+import org.onap.portal.history.configuration.HistoryConfig;
 import org.onap.portal.history.openapi.api.ActionsApi;
 import org.onap.portal.history.openapi.model.ActionResponse;
 import org.onap.portal.history.openapi.model.ActionsListResponse;
@@ -40,11 +40,11 @@ import reactor.core.publisher.Mono;
 public class ActionsController implements ActionsApi {
 
   private final ActionsService actionsService;
-  private final PortalHistoryConfig portalHistoryConfig;
+  private final HistoryConfig historyConfig;
 
-  public ActionsController(ActionsService actionsService, PortalHistoryConfig portalHistoryConfig){
+  public ActionsController(ActionsService actionsService, HistoryConfig historyConfig){
     this.actionsService = actionsService;
-    this.portalHistoryConfig = portalHistoryConfig;
+    this.historyConfig = historyConfig;
   }
 
   @Override
@@ -52,7 +52,7 @@ public class ActionsController implements ActionsApi {
 
     return IdTokenExchange
       .validateUserId(userId, exchange, xRequestId)
-      .then(createActionRequest.flatMap(action -> actionsService.createActions(userId, action, portalHistoryConfig.getSaveInterval(), xRequestId)))
+      .then(createActionRequest.flatMap(action -> actionsService.createActions(userId, action, historyConfig.getSaveInterval(), xRequestId)))
       .map(ResponseEntity::ok);
   }
 
@@ -70,7 +70,7 @@ public class ActionsController implements ActionsApi {
 
     return IdTokenExchange
       .validateUserId(userId, exchange, xRequestId)
-      .then(actionsService.getActions(userId, page.orElse(1), pageSize.orElse(10), showLastHours.orElse(portalHistoryConfig.getSaveInterval()), portalHistoryConfig.getSaveInterval(), xRequestId))
+      .then(actionsService.getActions(userId, page.orElse(1), pageSize.orElse(10), showLastHours.orElse(historyConfig.getSaveInterval()), historyConfig.getSaveInterval(), xRequestId))
       .map(ResponseEntity::ok);
   }
 
@@ -78,7 +78,7 @@ public class ActionsController implements ActionsApi {
   public Mono<ResponseEntity<ActionsListResponse>> listActions(String xRequestId, Optional<Integer> page, Optional<Integer> pageSize, Optional<Integer> showLastHours, ServerWebExchange exchange) {
 
     return actionsService
-      .listActions(page.orElse(1), pageSize.orElse(10), showLastHours.orElse(portalHistoryConfig.getSaveInterval()), portalHistoryConfig.getSaveInterval(), xRequestId)
+      .listActions(page.orElse(1), pageSize.orElse(10), showLastHours.orElse(historyConfig.getSaveInterval()), historyConfig.getSaveInterval(), xRequestId)
       .map(ResponseEntity::ok);
   }
 }

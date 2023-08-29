@@ -19,7 +19,7 @@ de:
       embedded:
         version: 5.0.15
 
-portal-history:
+history:
   realm: ONAP
   save-interval: 72
   delete-interval: '0 0 0 1 1 *'
@@ -38,4 +38,3 @@ management:
       enabled: true
     java:
       enabled: true
-
