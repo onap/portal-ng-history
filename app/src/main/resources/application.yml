@@ -16,11 +16,11 @@ spring:
           jwk-set-uri: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs #Keycloak Endpoint
   data:
     mongodb:
-      database: ${HISTORY_DATABASE}
-      host: ${HISTORY_HOST}
-      port: ${HISTORY_PORT}
-      username: ${HISTORY_USERNAME}
-      password: ${HISTORY_PASSWORD}
+      database: ${MONGO_DATABASE}
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
 
 history:
   save-interval: 72
