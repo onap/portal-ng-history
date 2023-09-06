@@ -40,3 +40,10 @@ management:
       enabled: true
     java:
       enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0 # sample every request
+  zipkin:
+    tracing:
+      endpoint: http://${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
