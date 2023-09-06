@@ -25,6 +25,7 @@ ext {
         embedMongoVersion = '4.7.0'
         embedMongoIntegrationVersion = '4.7.0'
         springCloudWiremockVersion = '4.0.3'
+        micrometerVersion = '1.0.0'
 }
 
 dependencies {
@@ -41,6 +42,11 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:$logbackVersion"
     implementation "ch.qos.logback:logback-core:$logbackVersion"
     implementation "net.logstash.logback:logstash-logback-encoder:$logstashLogbackVersion"
+
+    implementation(platform("io.micrometer:micrometer-tracing-bom:$micrometerVersion"))
+    implementation("io.micrometer:micrometer-tracing")
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.opentelemetry:opentelemetry-exporter-zipkin")
 
     compileOnly 'org.projectlombok:lombok'
 
