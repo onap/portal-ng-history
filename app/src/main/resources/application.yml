@@ -47,3 +47,9 @@ management:
   zipkin:
     tracing:
       endpoint: http://${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
+
+logger:
+  traceIdHeaderName: "X-Request-Id"
+  enabled: true
+  excludePaths:
+    - "/actuator/**"
