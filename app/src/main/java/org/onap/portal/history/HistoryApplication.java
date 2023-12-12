@@ -26,12 +26,13 @@ package org.onap.portal.history;
 
 
 import org.onap.portal.history.configuration.HistoryConfig;
+import org.onap.portal.history.logging.LoggerProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@EnableConfigurationProperties(HistoryConfig.class)
 @SpringBootApplication
+@EnableConfigurationProperties({HistoryConfig.class, LoggerProperties.class})
 public class HistoryApplication {
     public static void main(String[] args) {
         SpringApplication.run(HistoryApplication.class, args);

@@ -32,29 +32,23 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Component
-public class LogInterceptor implements WebFilter {
-  public static final String EXCHANGE_CONTEXT_ATTRIBUTE =
-      ServerWebExchangeContextFilter.class.getName() + ".EXCHANGE_CONTEXT";
+public class RequestIdInterceptor implements WebFilter {
+  public static final String EXCHANGE_CONTEXT_ATTRIBUTE = ServerWebExchangeContextFilter.class.getName()
+      + ".EXCHANGE_CONTEXT";
 
   public static final String X_REQUEST_ID = "X-Request-Id";
 
   /**
-   * Override a web filter to write log entries for every request and response and add header in response with X_REQUEST_ID
+   * Override a web filter to write log entries for every request and response and
+   * add header in response with X_REQUEST_ID
    */
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
     List<String> xRequestIdList = exchange.getRequest().getHeaders().get(X_REQUEST_ID);
     if (xRequestIdList != null && !xRequestIdList.isEmpty()) {
       String xRequestId = xRequestIdList.get(0);
-      Logger.requestLog( xRequestId, exchange.getRequest().getMethod(), exchange.getRequest().getURI());
-      
       exchange.getResponse().getHeaders().add(X_REQUEST_ID, xRequestId);
-      exchange.getResponse().beforeCommit(() -> {
-        Logger.responseLog(xRequestId,exchange.getResponse().getStatusCode());
-        return Mono.empty();
-      });
     }
-
     return chain
         .filter(exchange)
         .contextWrite(cxt -> cxt.put(EXCHANGE_CONTEXT_ATTRIBUTE, exchange));
