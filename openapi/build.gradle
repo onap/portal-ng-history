@@ -1,5 +1,5 @@
 plugins {
-    id 'org.onap.portal.history.java-application-conventions'
+    id 'org.onap.portalng.history.java-application-conventions'
     id 'org.openapi.generator'
 }
 
@@ -8,9 +8,9 @@ ext {
 }
 
 dependencies {
-    implementation "org.openapitools:openapi-generator:$openapiVersion"
+    compileOnly "org.openapitools:openapi-generator:$openapiVersion"
     constraints {
-        implementation('jakarta.validation:jakarta.validation-api:3.0.2') {
+        compileOnly('jakarta.validation:jakarta.validation-api:3.0.2') {
             because 'because min max validation wouldnt work with older versions of dependency'
         }
     }
@@ -37,9 +37,9 @@ openApiGenerate {
     generateApiDocumentation = false
     generateModelTests = false
     generateModelDocumentation = false
-    invokerPackage = "org.onap.portal.history.openapi"
-    apiPackage = "org.onap.portal.history.openapi.api"
-    modelPackage = "org.onap.portal.history.openapi.model"
+    invokerPackage = "org.onap.portalng.history.openapi"
+    apiPackage = "org.onap.portalng.history.openapi.api"
+    modelPackage = "org.onap.portalng.history.openapi.model"
 }
 
 compileJava {
