@@ -11,7 +11,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/auth/realms/ONAP/protocol/openid-connect/certs #Keycloak Endpoint
+          jwk-set-uri: http://localhost:8080/realms/ONAP/protocol/openid-connect/certs #Keycloak Endpoint
   data:
     mongodb:
       database: history
