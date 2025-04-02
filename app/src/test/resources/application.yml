@@ -12,6 +12,25 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:${wiremock.server.port}/realms/ONAP/protocol/openid-connect/certs #Keycloak Endpoint
+  datasource:
+    url: jdbc:tc:postgresql:16:///history
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    database: postgresql
+    properties:
+      hibernate:
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: 100
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: "classpath:/db/changelog.xml"
 
 de:
   flapdoodle:
@@ -44,3 +63,4 @@ logger:
   enabled: true
   excludePaths:
     - "/actuator/**"
+ 

@@ -55,7 +55,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
   protected static final String X_REQUEST_ID2 = "addf6005-3075-4c80-b7bc-2c70b7d42b22";
 
   @Autowired
-	ActionsService actionsService;
+  ActionsService actionsService;
 
   @Autowired
   private ActionsRepository repository;
@@ -64,32 +64,32 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
   protected Integer saveInterval = 72;
 
   @BeforeEach
-  void deleteMongoDataBase(){
-    repository.deleteAll().block();
+  void deleteMongoDataBase() {
+    repository.deleteAll();
   }
 
   @Test
   void thatUserCanHaveNoHistoryYet() throws JsonProcessingException {
     ActionsListResponse response = requestSpecification()
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .get( "/v1/actions/test-user")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .get("/v1/actions/test-user")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
 
     assertNotNull(response);
     assertThat(response.getTotalCount()).isEqualTo(0);
   }
 
   @Test
-  void thatActionCanBeSaved() throws Exception{
+  void thatActionCanBeSaved() throws Exception {
     ActionDto actionDto = new ActionDto();
     actionDto.setType("instantiation");
     actionDto.setAction("create");
@@ -106,10 +106,10 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
         .body(actionRequest)
         .when()
-        .post( "/v1/actions/test-user")
+        .post("/v1/actions/test-user")
         .then()
         .header("X-Request-Id", X_REQUEST_ID)
         .statusCode(HttpStatus.OK.value())
@@ -117,82 +117,91 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .body()
         .as(ActionResponse.class);
 
-    assertThat(response.getActionCreatedAt()).isEqualTo(actionRequest.getActionCreatedAt().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
+    assertThat(response.getActionCreatedAt()).isEqualTo(
+        actionRequest.getActionCreatedAt().truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_DATE_TIME));
     assertThat(response.getSaveInterval()).isEqualTo(saveInterval);
-    assertThat(objectMapper.writeValueAsString(response.getAction())).isEqualTo(objectMapper.writeValueAsString(actionRequest.getAction()));
+    assertThat(objectMapper.writeValueAsString(response.getAction()))
+        .isEqualTo(objectMapper.writeValueAsString(actionRequest.getAction()));
   }
 
   @Test
   void thatActionsCanBeListedWithoutParameter() throws JsonProcessingException {
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(500, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(500, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
     ActionsListResponse response = requestSpecification()
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .get( "/v1/actions")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .get("/v1/actions")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
 
     assertThat(response.getTotalCount()).isEqualTo(10);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
     assertThat(response.getActionsList().get(9).getSaveInterval()).isEqualTo(saveInterval);
-    assertThat(objectMapper.writeValueAsString(response.getActionsList().get(0).getAction())).isEqualTo(objectMapper.writeValueAsString(actionsDaoList.get(0).getAction()));
-    assertThat(objectMapper.writeValueAsString(response.getActionsList().get(9).getAction())).isEqualTo(objectMapper.writeValueAsString(actionsDaoList.get(9).getAction()));
+    assertThat(objectMapper.valueToTree(response.getActionsList().get(0).getAction())
+        .equals(actionsDaoList.get(0).getAction()));
+    assertThat(objectMapper.valueToTree(response.getActionsList().get(9).getAction())
+        .equals(actionsDaoList.get(9).getAction()));
   }
 
   @Test
   void thatActionsCanBeListedWithParameter() throws JsonProcessingException {
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(20, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(20, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
     ActionsListResponse response = requestSpecification()
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .get( "/v1/actions?page=1&pageSize=5")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .get("/v1/actions?page=1&pageSize=5")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
 
     assertThat(response.getTotalCount()).isEqualTo(5);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
     assertThat(response.getActionsList().get(4).getSaveInterval()).isEqualTo(saveInterval);
-    assertThat(objectMapper.writeValueAsString(response.getActionsList().get(0).getAction())).isEqualTo(objectMapper.writeValueAsString(actionsDaoList.get(0).getAction()));
-    assertThat(objectMapper.writeValueAsString(response.getActionsList().get(4).getAction())).isEqualTo(objectMapper.writeValueAsString(actionsDaoList.get(4).getAction()));
+    assertThat(objectMapper.valueToTree(response.getActionsList().get(0).getAction())
+        .equals(actionsDaoList.get(0).getAction()));
+    assertThat(objectMapper.valueToTree(response.getActionsList().get(4).getAction())
+        .equals(actionsDaoList.get(4).getAction()));
   }
 
   @Test
   void thatActionsCanBeListedWithParameterInOrderByActionCreatedAt() {
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(5, "test-user", OffsetDateTime.of(LocalDateTime.now().minusDays(2), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    actionsDaoList.addAll(ActionFixtures.actionsDaoList(5, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)));
-    actionsDaoList.addAll(ActionFixtures.actionsDaoList(5, "test-user", OffsetDateTime.of(LocalDateTime.now().minusHours(6), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)));
-    actionsDaoList.addAll(ActionFixtures.actionsDaoList(5, "test-user", OffsetDateTime.of(LocalDateTime.now().minusHours(12), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(5, "test-user",
+        OffsetDateTime.of(LocalDateTime.now().minusDays(2), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    actionsDaoList.addAll(ActionFixtures.actionsDaoList(5, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)));
+    actionsDaoList.addAll(ActionFixtures.actionsDaoList(5, "test-user",
+        OffsetDateTime.of(LocalDateTime.now().minusHours(6), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)));
+    actionsDaoList.addAll(ActionFixtures.actionsDaoList(5, "test-user",
+        OffsetDateTime.of(LocalDateTime.now().minusHours(12), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS)));
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     ActionsListResponse response = requestSpecification()
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
         .when()
-        .get( "/v1/actions?page=1&pageSize=5")
+        .get("/v1/actions?page=1&pageSize=5")
         .then()
         .header("X-Request-Id", X_REQUEST_ID)
         .statusCode(HttpStatus.OK.value())
@@ -203,51 +212,55 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
     assertThat(response.getTotalCount()).isEqualTo(5);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
     assertThat(response.getActionsList().get(4).getSaveInterval()).isEqualTo(saveInterval);
-    assertThat(response.getActionsList().get(0).getActionCreatedAt()).isEqualTo(actionsDaoList.get(5).getActionCreatedAt().toInstant().atOffset(ZoneOffset.UTC));
-    assertThat(response.getActionsList().get(4).getActionCreatedAt()).isEqualTo(actionsDaoList.get(9).getActionCreatedAt().toInstant().atOffset(ZoneOffset.UTC));
+    assertThat(response.getActionsList().get(0).getActionCreatedAt())
+        .isEqualTo(actionsDaoList.get(5).getActionCreatedAt().toInstant().atOffset(ZoneOffset.UTC));
+    assertThat(response.getActionsList().get(4).getActionCreatedAt())
+        .isEqualTo(actionsDaoList.get(9).getActionCreatedAt().toInstant().atOffset(ZoneOffset.UTC));
   }
 
   @Test
   void thatActionsCanBeListedWithShowLastHours() throws JsonProcessingException {
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(20, "test-user", OffsetDateTime.now().plusMinutes(30).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(20, "test-user",
+        OffsetDateTime.now().plusMinutes(30).truncatedTo(ChronoUnit.SECONDS));
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
-      ActionsListResponse response = requestSpecification()
+    ActionsListResponse response = requestSpecification()
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
         .when()
-        .get( "/v1/actions?page=1&pageSize=20&showLastHours=12")
+        .get("/v1/actions?page=1&pageSize=20&showLastHours=12")
         .then()
         .header("X-Request-Id", X_REQUEST_ID)
         .statusCode(HttpStatus.OK.value())
         .extract()
         .body()
         .as(ActionsListResponse.class);
-        
-        assertThat(response.getTotalCount()).isEqualTo(12);
-        assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
-        assertThat(objectMapper.writeValueAsString(response.getActionsList().get(0).getAction())).isEqualTo(objectMapper.writeValueAsString(actionsDaoList.get(0).getAction()));
-        assertThat(objectMapper.writeValueAsString(response.getActionsList().get(11).getAction())).isEqualTo(objectMapper.writeValueAsString(actionsDaoList.get(11).getAction()));
+
+    assertThat(response.getTotalCount()).isEqualTo(12);
+    assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
+    assertThat(objectMapper.valueToTree(response.getActionsList().get(0).getAction())
+        .equals(actionsDaoList.get(0).getAction()));
+    assertThat(objectMapper.valueToTree(response.getActionsList().get(11).getAction())
+        .equals(actionsDaoList.get(11).getAction()));
   }
 
   @Test
   void thatActionsCanNotBeListedWithWrongPageParameter() {
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(5, "test-user", OffsetDateTime.of(LocalDateTime.now().minusDays(2), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoList(5, "test-user",
+        OffsetDateTime.of(LocalDateTime.now().minusDays(2), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     Problem response = requestSpecification()
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
         .when()
-        .get( "/v1/actions?page=0&pageSize=5")
+        .get("/v1/actions?page=0&pageSize=5")
         .then()
         .header("X-Request-Id", X_REQUEST_ID)
         .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -259,90 +272,98 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  void thatActionsCanBeGetForUserWithShowLastHours(){
+  void thatActionsCanBeGetForUserWithShowLastHours() {
     // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.now().plusMinutes(30).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user", OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user", OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.now().plusMinutes(30).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user",
+        OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user",
+        OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
     actionsDaoList.addAll(actionsDaoList2);
     actionsDaoList.addAll(actionsDaoList3);
 
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     ActionsListResponse response = requestSpecification()
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .get( "/v1/actions/test-user?page=1&pageSize=20&showLastHours=2")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .get("/v1/actions/test-user?page=1&pageSize=20&showLastHours=2")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
 
     assertThat(response.getTotalCount()).isEqualTo(2);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
   }
 
   @Test
-  void thatActionsCanBeGottenForUserWithShowLastHoursWithMinusValue(){
+  void thatActionsCanBeGottenForUserWithShowLastHoursWithMinusValue() {
     // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now().plusHours(48), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now().plusHours(48), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     actionsDaoList.addAll(actionsDaoList2);
     actionsDaoList.addAll(actionsDaoList3);
     actionsDaoList.addAll(actionsDaoList4);
 
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
-
-    ActionsListResponse response = requestSpecification()
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .get( "/v1/actions/test-user?page=1&pageSize=20&showLastHours=-2")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
-
-    assertThat(response.getTotalCount()).isEqualTo(10);
-  }
-
-  @Test
-  void thatActionsCanBeGottenForUserWithoutParameter(){
-    // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    actionsDaoList.addAll(actionsDaoList2);
-    actionsDaoList.addAll(actionsDaoList3);
-    actionsDaoList.addAll(actionsDaoList4);
-    repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     ActionsListResponse response = requestSpecification()
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
         .when()
-        .get( "/v1/actions/test-user")
+        .get("/v1/actions/test-user?page=1&pageSize=20&showLastHours=-2")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
+
+    assertThat(response.getTotalCount()).isEqualTo(10);
+  }
+
+  @Test
+  void thatActionsCanBeGottenForUserWithoutParameter() {
+    // First mixed user actions for different users
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    actionsDaoList.addAll(actionsDaoList2);
+    actionsDaoList.addAll(actionsDaoList3);
+    actionsDaoList.addAll(actionsDaoList4);
+    repository
+        .saveAll(actionsDaoList);
+
+    ActionsListResponse response = requestSpecification()
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .get("/v1/actions/test-user")
         .then()
         .header("X-Request-Id", X_REQUEST_ID)
         .statusCode(HttpStatus.OK.value())
@@ -357,81 +378,86 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   void thatActionsCanBeGottenForUserWithShowLastHoursWithEmptyList() {
     // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(10, "test2-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(10, "test3-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     actionsDaoList.addAll(actionsDaoList2);
     actionsDaoList.addAll(actionsDaoList3);
     actionsDaoList.addAll(actionsDaoList4);
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     ActionsListResponse response = requestSpecification("test4-user")
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .get( "/v1/actions/test4-user?page=1&pageSize=20&showLastHours=2")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .get("/v1/actions/test4-user?page=1&pageSize=20&showLastHours=2")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
 
     assertThat(response.getTotalCount()).isZero();
   }
 
   @Test
-  void thatActionsCanBeDeleted(){
+  void thatActionsCanBeDeleted() {
     // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.now().plusMinutes(30).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(5, "test2-user", OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(3, "test3-user", OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.now().plusMinutes(30).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(5, "test2-user",
+        OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(3, "test3-user",
+        OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS));
     actionsDaoList.addAll(actionsDaoList2);
     actionsDaoList.addAll(actionsDaoList3);
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     requestSpecification()
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .delete( "/v1/actions/test-user?deleteAfterHours=2")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .delete("/v1/actions/test-user?deleteAfterHours=2")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
 
     ActionsListResponse responseGetUser = requestSpecification()
-      .given()
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .contentType(MediaType.APPLICATION_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID2 ))
-      .when()
-      .get( "/v1/actions/test-user?page=1&pageSize=20")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID2)
-      .statusCode(HttpStatus.OK.value())
-      .extract()
-      .body()
-      .as(ActionsListResponse.class);
+        .given()
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID2))
+        .when()
+        .get("/v1/actions/test-user?page=1&pageSize=20")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID2)
+        .statusCode(HttpStatus.OK.value())
+        .extract()
+        .body()
+        .as(ActionsListResponse.class);
 
     ActionsListResponse responseGetUser2 = requestSpecification("test2-user")
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID2 ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID2))
         .when()
-        .get( "/v1/actions/test2-user")
+        .get("/v1/actions/test2-user")
         .then()
         .header("X-Request-Id", X_REQUEST_ID2)
         .statusCode(HttpStatus.OK.value())
@@ -443,9 +469,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID2 ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID2))
         .when()
-        .get( "/v1/actions/test3-user")
+        .get("/v1/actions/test3-user")
         .then()
         .header("X-Request-Id", X_REQUEST_ID2)
         .statusCode(HttpStatus.OK.value())
@@ -459,19 +485,19 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  void thatActionsCanNotBeGetForUserBecauseOfWrongUserIdInToken(){
+  void thatActionsCanNotBeGetForUserBecauseOfWrongUserIdInToken() {
     // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     Problem response = requestSpecification("wrong-userId")
         .given()
         .accept(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
         .when()
-        .get( "/v1/actions/test-user")
+        .get("/v1/actions/test-user")
         .then()
         .header("X-Request-Id", X_REQUEST_ID)
         .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -484,44 +510,47 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  void thatActionsCanNotBeGetForUserBecauseOfWrongHeader(){
+  void thatActionsCanNotBeGetForUserBecauseOfWrongHeader() {
     // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     Problem response = wrongHeaderRequestSpecification("test-user")
-      .given()
-      .accept(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-      .header(new Header("X-Request-Id", X_REQUEST_ID ))
-      .when()
-      .get( "/v1/actions/test-user")
-      .then()
-      .header("X-Request-Id", X_REQUEST_ID)
-      .statusCode(HttpStatus.BAD_REQUEST.value())
-      .extract()
-      .body()
-      .as(Problem.class);
+        .given()
+        .accept(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+        .header(new Header("X-Request-Id", X_REQUEST_ID))
+        .when()
+        .get("/v1/actions/test-user")
+        .then()
+        .header("X-Request-Id", X_REQUEST_ID)
+        .statusCode(HttpStatus.BAD_REQUEST.value())
+        .extract()
+        .body()
+        .as(Problem.class);
 
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
   }
 
   @Test
-  void thatActionsCanBeDeletedForAllUsers(){
+  void thatActionsCanBeDeletedForAllUsers() {
     // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now().minusHours(96), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(8, "test2-user", OffsetDateTime.of(LocalDateTime.now().minusHours(24), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(5, "test3-user", OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user", OffsetDateTime.of(LocalDateTime.now().minusHours(48), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now().minusHours(96), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList2 = ActionFixtures.actionsDaoList(8, "test2-user",
+        OffsetDateTime.of(LocalDateTime.now().minusHours(24), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList3 = ActionFixtures.actionsDaoList(5, "test3-user",
+        OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
+    List<ActionsDao> actionsDaoList4 = ActionFixtures.actionsDaoListHourOffsetOnly(10, "test-user",
+        OffsetDateTime.of(LocalDateTime.now().minusHours(48), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
 
     actionsDaoList.addAll(actionsDaoList2);
     actionsDaoList.addAll(actionsDaoList3);
     actionsDaoList.addAll(actionsDaoList4);
     repository
-      .saveAll(actionsDaoList)
-      .blockLast();
+        .saveAll(actionsDaoList);
 
     actionsService.deleteActions(72).block();
 
@@ -529,9 +558,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID2 ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID2))
         .when()
-        .get( "/v1/actions/test-user?page=1&pageSize=20")
+        .get("/v1/actions/test-user?page=1&pageSize=20")
         .then()
         .statusCode(HttpStatus.OK.value())
         .extract()
@@ -542,9 +571,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID2 ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID2))
         .when()
-        .get( "/v1/actions/test2-user")
+        .get("/v1/actions/test2-user")
         .then()
         .statusCode(HttpStatus.OK.value())
         .extract()
@@ -555,9 +584,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID2 ))
+        .header(new Header("X-Request-Id", X_REQUEST_ID2))
         .when()
-        .get( "/v1/actions/test3-user")
+        .get("/v1/actions/test3-user")
         .then()
         .statusCode(HttpStatus.OK.value())
         .extract()

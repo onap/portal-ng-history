@@ -23,22 +23,39 @@ package org.onap.portalng.history.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.Date;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Data access object for the actions in the MongoDB repository.
- * No database id is set in this class because MongoDB use internal _id as primary key / uniq object identifier
+ * No database id is set in this class because MongoDB use internal _id as
+ * primary key / uniq object identifier
  */
-@Document(collection = "actions")
+@Entity
 @Getter
 @Setter
+@Table(name = "actions")
 public class ActionsDao {
+
+  @Id
+  @UuidGenerator
+  private String id;
 
   private String userId;
 
   private Date actionCreatedAt;
 
-  private Object action;
+  @JdbcTypeCode(SqlTypes.JSON)
+  private JsonNode action;
 
 }

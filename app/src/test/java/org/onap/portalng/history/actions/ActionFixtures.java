@@ -27,12 +27,17 @@ import java.util.Date;
 import java.util.List;
 
 import org.onap.portalng.history.openapi.model.CreateActionRequest;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.onap.portalng.history.entities.ActionsDao;
 
 public class ActionFixtures {
 
+  private static ObjectMapper objectMapper = new ObjectMapper();
+
   public static List<CreateActionRequest> createActionRequestList(
-    Integer numberOfActions, String userId, OffsetDateTime createdAt){
+      Integer numberOfActions, String userId, OffsetDateTime createdAt) {
     List<CreateActionRequest> createActionRequestList = new ArrayList<>();
     for (Integer i = 1; i <= numberOfActions; i++) {
       createActionRequestList.add(
@@ -43,7 +48,7 @@ public class ActionFixtures {
   }
 
   public static List<CreateActionRequest> createActionRequestListHourOffsetOnly(
-      Integer numberOfActions, String userId, OffsetDateTime createdAt){
+      Integer numberOfActions, String userId, OffsetDateTime createdAt) {
     List<CreateActionRequest> createActionRequestList = new ArrayList<>();
     for (Integer i = 1; i <= numberOfActions; i++) {
       createActionRequestList.add(
@@ -78,7 +83,7 @@ public class ActionFixtures {
   }
 
   public static List<ActionsDao> actionsDaoList(
-    Integer numberOfActions, String userId, OffsetDateTime createdAt){
+      Integer numberOfActions, String userId, OffsetDateTime createdAt) {
     List<ActionsDao> actionsDaoList = new ArrayList<>();
     for (Integer i = 1; i <= numberOfActions; i++) {
       actionsDaoList.add(
@@ -108,13 +113,14 @@ public class ActionFixtures {
 
     ActionsDao actionsDao = new ActionsDao();
     actionsDao.setUserId(userId);
-    actionsDao.setAction(actionDto);
-    actionsDao.setActionCreatedAt(new Date(createdAt.minusHours(deltaHours).minusMinutes(deltaMinutes).minusSeconds(deltaSeconds).toEpochSecond()*1000));
+    actionsDao.setAction(objectMapper.valueToTree(actionDto));
+    actionsDao.setActionCreatedAt(new Date(
+        createdAt.minusHours(deltaHours).minusMinutes(deltaMinutes).minusSeconds(deltaSeconds).toEpochSecond() * 1000));
     return actionsDao;
   }
 
   public static List<ActionsDao> actionsDaoListHourOffsetOnly(
-    Integer numberOfActions, String userId, OffsetDateTime createdAt){
+      Integer numberOfActions, String userId, OffsetDateTime createdAt) {
     List<ActionsDao> actionsDaoList = new ArrayList<>();
     for (Integer i = 1; i <= numberOfActions; i++) {
       actionsDaoList.add(

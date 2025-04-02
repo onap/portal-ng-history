@@ -14,13 +14,24 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/certs #Keycloak Endpoint
-  data:
-    mongodb:
-      database: ${MONGO_DATABASE}
-      host: ${MONGO_HOST}
-      port: ${MONGO_PORT}
-      username: ${MONGO_USERNAME}
-      password: ${MONGO_PASSWORD}
+  datasource:
+    url: jdbc:postgresql://${HISTORY_DB_HOST}:${HISTORY_DB_PORT}/${HISTORY_DB}
+    username: ${HISTORY_DB_USERNAME}
+    password: ${HISTORY_DB_PASSWORD}
+  jpa:
+    database: postgresql
+    properties:
+      hibernate:
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: 100
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: "classpath:/db/changelog.xml"
 
 history:
   save-interval: 72

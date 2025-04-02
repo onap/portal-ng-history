@@ -22,21 +22,19 @@
 package org.onap.portalng.history.repository;
 
 import java.util.Date;
+import java.util.List;
 
 import org.onap.portalng.history.entities.ActionsDao;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+public interface ActionsRepository extends JpaRepository<ActionsDao, String> {
 
-public interface ActionsRepository extends ReactiveMongoRepository<ActionsDao, String> {
+  List<ActionsDao> findAllByActionCreatedAtAfter(Pageable pageable, Date actionCreatedAt);
 
-  Flux<ActionsDao> findAllByActionCreatedAtAfter(Pageable pageable, Date actionCreatedAt);
+  List<ActionsDao> findAllByUserIdAndActionCreatedAtAfter(Pageable pageable, String userId, Date actionCreatedAt);
 
-  Flux<ActionsDao> findAllByUserIdAndActionCreatedAtAfter(Pageable pageable, String userId, Date actionCreatedAt);
+  long deleteAllByUserIdAndActionCreatedAtIsBefore(String userId, Date actionCreatedAt);
 
-  Mono<Long> deleteAllByUserIdAndActionCreatedAtIsBefore(String userId, Date actionCreatedAt);
-
-  Mono<Long> deleteAllByActionCreatedAtIsBefore(Date actionCreatedAt);
+  long deleteAllByActionCreatedAtIsBefore(Date actionCreatedAt);
 }

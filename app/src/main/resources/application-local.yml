@@ -12,13 +12,12 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8080/realms/ONAP/protocol/openid-connect/certs #Keycloak Endpoint
-  data:
-    mongodb:
-      database: history
-      host: localhost
-      port: 27017
-      username: root
-      password: password
+  datasource:
+    url: jdbc:postgresql://localhost:5441/history
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
 
 history:
   save-interval: 72
