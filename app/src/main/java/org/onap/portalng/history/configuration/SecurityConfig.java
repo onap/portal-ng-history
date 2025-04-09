@@ -38,15 +38,13 @@ public class SecurityConfig {
 
   @Bean
   public SecurityWebFilterChain springSecurityWebFilterChain(ServerHttpSecurity http) {
-    return http.httpBasic().disable()
-        .formLogin().disable()
-        .csrf().disable()
-        .cors()
-        .and()
-        .authorizeExchange()
-        .pathMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-        .anyExchange().authenticated()
-        .and()
+    return http.httpBasic(basic -> basic.disable()
+        .formLogin(login -> login.disable()
+            .csrf(csrf -> csrf.disable()
+                .cors())))
+        .authorizeExchange(exchange -> exchange
+            .pathMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+            .anyExchange().authenticated())
         .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt)
         .build();
   }

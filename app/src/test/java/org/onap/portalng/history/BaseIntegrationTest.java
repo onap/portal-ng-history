@@ -78,7 +78,7 @@ public abstract class BaseIntegrationTest {
     WireMock.stubFor(
         WireMock.get(
                 WireMock.urlMatching(
-                    String.format("/realms/%s/protocol/openid-connect/certs", realm)))
+                    "/realms/%s/protocol/openid-connect/certs".formatted(realm)))
             .willReturn(
                 WireMock.aResponse()
                     .withHeader("Content-Type", JWKSet.MIME_TYPE)
@@ -90,7 +90,7 @@ public abstract class BaseIntegrationTest {
     WireMock.stubFor(
         WireMock.post(
                 WireMock.urlMatching(
-                    String.format("/realms/%s/protocol/openid-connect/token", realm)))
+                    "/realms/%s/protocol/openid-connect/token".formatted(realm)))
             .withBasicAuth("test", "test")
             .withRequestBody(WireMock.containing("grant_type=client_credentials"))
             .willReturn(

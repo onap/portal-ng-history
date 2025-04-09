@@ -123,7 +123,7 @@ public class TokenGenerator {
     @Builder.Default private final List<String> roles = Collections.emptyList();
 
     public String issuer() {
-      return String.format("http://localhost:%d/realms/%s", port, realm);
+      return "http://localhost:%d/realms/%s".formatted(port, realm);
     }
   }
 }
