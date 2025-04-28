@@ -2,7 +2,7 @@
 // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_version_management
 pluginManagement {
     plugins {
-        id 'org.springframework.boot' version '3.3.10'
+        id 'org.springframework.boot' version '3.4.5'
         id 'io.spring.dependency-management' version '1.1.7'
         id 'com.github.hierynomus.license' version '0.16.1'
         id 'org.openapi.generator' version '7.0.0-beta'
