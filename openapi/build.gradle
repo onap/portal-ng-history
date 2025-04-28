@@ -4,7 +4,7 @@ plugins {
 }
 
 ext {
-    openapiVersion = '7.0.0-beta'
+    openapiVersion = '7.13.0'
 }
 
 dependencies {
