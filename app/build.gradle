@@ -33,10 +33,10 @@ ext {
         problemVersion = '0.27.1'
         problemSpringVersion = '0.27.0'
         logbackVersion = '1.5.18'
-        logstashLogbackVersion = '7.4'
+        logstashLogbackVersion = '8.1'
         springCloudWiremockVersion = '4.1.5'
         micrometerVersion = '1.0.0'
-        liquibaseCoreVersion = '4.31.0'
+        liquibaseCoreVersion = '4.31.1'
 }
 
 repositories {
@@ -133,4 +133,9 @@ def Properties getVersionProperties() {
 		versionProperties.load(it)
 	}
 	return versionProperties
+}
+
+gitProperties {
+    // if .git directory is on the same level as the root project
+    dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
 }
