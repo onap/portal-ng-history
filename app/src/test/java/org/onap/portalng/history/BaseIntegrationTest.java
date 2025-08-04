@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.onap.portalng.history.util.IdTokenExchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -144,11 +143,7 @@ public abstract class BaseIntegrationTest {
     final String idToken =
         tokenGenerator.generateToken(getTokenGeneratorConfig("test-user", List.of("foo")));
 
-    return unauthenticatedRequestSpecification()
-        .auth()
-        .preemptive()
-        .oauth2(idToken)
-        .header(IdTokenExchange.X_AUTH_IDENTITY_HEADER, "Bearer " + idToken);
+    return unauthenticatedRequestSpecification().auth().preemptive().oauth2(idToken);
   }
 
   /**
@@ -162,28 +157,6 @@ public abstract class BaseIntegrationTest {
     final String idToken =
         tokenGenerator.generateToken(getTokenGeneratorConfig(userId, List.of("foo")));
 
-    return unauthenticatedRequestSpecification()
-        .auth()
-        .preemptive()
-        .oauth2(idToken)
-        .header(IdTokenExchange.X_AUTH_IDENTITY_HEADER, "Bearer " + idToken);
-  }
-
-  /**
-   * Object to store common attributes of requests that are going to be made. Adds an Identity
-   * header for the <code>onap_admin</code> role to the request.
-   *
-   * @param userId the userId that should be contained in the incoming request
-   * @return the definition of the incoming request (northbound)
-   */
-  protected RequestSpecification wrongHeaderRequestSpecification(String userId) {
-    final String idToken =
-        tokenGenerator.generateToken(getTokenGeneratorConfig(userId, List.of("foo")));
-
-    return unauthenticatedRequestSpecification()
-        .auth()
-        .preemptive()
-        .oauth2(idToken)
-        .header("X-WRONG-HEADER", "Bearer " + idToken);
+    return unauthenticatedRequestSpecification().auth().preemptive().oauth2(idToken);
   }
 }
