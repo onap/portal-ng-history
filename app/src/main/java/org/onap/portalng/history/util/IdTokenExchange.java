@@ -21,13 +21,8 @@
 
 package org.onap.portalng.history.util;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTParser;
-import java.text.ParseException;
-import org.onap.portalng.history.exception.ProblemException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.server.ServerWebExchange;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import reactor.core.publisher.Mono;
 
 /**
@@ -36,43 +31,9 @@ import reactor.core.publisher.Mono;
  */
 public final class IdTokenExchange {
 
-  public static final String X_AUTH_IDENTITY_HEADER = "X-Auth-Identity";
   public static final String JWT_CLAIM_USERID = "sub";
 
   private IdTokenExchange() {}
-
-  /**
-   * Extract the identity header from the given {@link ServerWebExchange}.
-   * @param exchange the ServerWebExchange that contains information about the incoming request
-   * @return the identity header in the form of <code>Bearer {@literal <Token>}<c/ode>
-   */
-  private static Mono<String> extractIdentityHeader(ServerWebExchange exchange) {
-    return Mono.just(exchange.getRequest().getHeaders().getOrEmpty(X_AUTH_IDENTITY_HEADER))
-        .map(headers -> headers.get(0))
-        .onErrorResume(
-            Exception.class,
-            ex ->
-                Mono.error(
-                    ProblemException.builder()
-                        .type(Problem.DEFAULT_TYPE)
-                        .status(Status.FORBIDDEN)
-                        .title("Forbidden access")
-                        .detail(X_AUTH_IDENTITY_HEADER + " is not set")
-                        .build()));
-  }
-
-  /**
-   * Extract the identity token from the given {@link ServerWebExchange}.
-   *
-   * @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#IDToken">OpenId Connect ID
-   *     Token</a>
-   * @param exchange the ServerWebExchange that contains information about the incoming request
-   * @return the identity token that contains user roles
-   */
-  private static Mono<String> extractIdToken(ServerWebExchange exchange) {
-    return extractIdentityHeader(exchange)
-        .map(identityHeader -> identityHeader.replace("Bearer ", ""));
-  }
 
   /**
    * Extract the <code>userId</code> from the given {@link ServerWebExchange}
@@ -81,49 +42,9 @@ public final class IdTokenExchange {
    * @return the id of the user
    */
   public static Mono<String> extractUserId(ServerWebExchange exchange) {
-    return extractIdToken(exchange).flatMap(idToken -> extractUserClaim(idToken));
-  }
-
-  private static Mono<String> extractUserClaim(String idToken) {
-    JWTClaimsSet jwtClaimSet;
-    try {
-      jwtClaimSet = JWTParser.parse(idToken).getJWTClaimsSet();
-    } catch (ParseException e) {
-      return Mono.error(e);
-    }
-    return Mono.just(String.class.cast(jwtClaimSet.getClaim(JWT_CLAIM_USERID)));
-  }
-
-  /**
-   * Validate if given <code>userId</code> is same as extracted from the given {@link
-   * ServerWebExchange}
-   *
-   * @param userId from the path parameter of the REST call
-   * @param exchange the ServerWebExchange that contains information about the incoming request
-   * @return <code>empty Mono</code> userId is the same as extracted from {@link ServerWebExchange}
-   *     <code>Forbidden</code> userId is <bold>not</bold> the same as extracted from {@link
-   *     ServerWebExchange}
-   */
-  public static Mono<Void> validateUserId(String userId, ServerWebExchange exchange) {
-
-    return extractUserId(exchange)
-        .map(userSub -> userSub.equals(userId))
-        .flatMap(
-            match -> {
-              if (Boolean.TRUE.equals(match)) {
-                return Mono.empty();
-              } else {
-                Logger.errorLog(
-                    "Requested " + userId + " did not match the JWT in the X-Auth-Identity header",
-                    userId);
-                return Mono.error(
-                    ProblemException.builder()
-                        .type(Problem.DEFAULT_TYPE)
-                        .status(Status.FORBIDDEN)
-                        .title("Forbidden access")
-                        .detail("UserId did not match with JWT in " + X_AUTH_IDENTITY_HEADER)
-                        .build());
-              }
-            });
+    return exchange
+        .getPrincipal()
+        .cast(JwtAuthenticationToken.class)
+        .map(auth -> auth.getToken().getClaimAsString(JWT_CLAIM_USERID));
   }
 }

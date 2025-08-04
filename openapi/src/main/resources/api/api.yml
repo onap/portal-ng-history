@@ -14,8 +14,6 @@ paths:
     parameters:
       - $ref: '#/components/parameters/userIdPathParam'
     get:
-      security:
-        - bearerAuth: []
       summary: Retrieve all actions for a specific user
       responses:
         '200':
@@ -48,8 +46,6 @@ paths:
       tags:
         - actions
     post:
-      security:
-        - bearerAuth: []
       summary: Create an action for a given user
       operationId: createAction
       responses:
@@ -79,8 +75,6 @@ paths:
       tags:
         - actions
     delete:
-      security:
-        - bearerAuth: []
       summary: Delete user actions after given time
       operationId: deleteActions
       parameters:
@@ -113,8 +107,6 @@ paths:
       description: Delete user actions after given time
   /v1/actions:
     get:
-      security:
-        - bearerAuth: []
       summary: Retrieve all actions from the portal with an optional timeframe
       responses:
         '200':
@@ -314,3 +306,5 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+security:
+  - bearerAuth: []

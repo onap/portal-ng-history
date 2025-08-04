@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.restassured.http.Header;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -48,9 +47,6 @@ import org.springframework.http.MediaType;
 
 class ActionsControllerIntegrationTest extends BaseIntegrationTest {
 
-  protected static final String X_REQUEST_ID = "addf6005-3075-4c80-b7bc-2c70b7d42b57";
-  protected static final String X_REQUEST_ID2 = "addf6005-3075-4c80-b7bc-2c70b7d42b22";
-
   @Autowired ActionsService actionsService;
 
   @Autowired private ActionsRepository repository;
@@ -70,11 +66,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions/test-user")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -106,12 +100,10 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .body(actionRequest)
             .when()
             .post("/v1/actions/test-user")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -141,11 +133,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -177,11 +167,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions?page=1&pageSize=5")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -233,11 +221,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions?page=1&pageSize=5")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -264,11 +250,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions?page=1&pageSize=20&showLastHours=12")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -301,11 +285,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions?page=0&pageSize=5")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .extract()
             .body()
@@ -337,11 +319,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions/test-user?page=1&pageSize=20&showLastHours=2")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -386,11 +366,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions/test-user?page=1&pageSize=20&showLastHours=-2")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -432,11 +410,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions/test-user")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -479,11 +455,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
             .when()
             .get("/v1/actions/test4-user?page=1&pageSize=20&showLastHours=2")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -512,11 +486,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .given()
         .accept(MediaType.APPLICATION_JSON_VALUE)
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .header(new Header("X-Request-Id", X_REQUEST_ID))
         .when()
         .delete("/v1/actions/test-user?deleteAfterHours=2")
         .then()
-        .header("X-Request-Id", X_REQUEST_ID)
         .statusCode(HttpStatus.OK.value())
         .extract()
         .body()
@@ -527,11 +499,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID2))
             .when()
             .get("/v1/actions/test-user?page=1&pageSize=20")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID2)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -542,11 +512,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID2))
             .when()
             .get("/v1/actions/test2-user")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID2)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -557,11 +525,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID2))
             .when()
             .get("/v1/actions/test3-user")
             .then()
-            .header("X-Request-Id", X_REQUEST_ID2)
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
@@ -570,62 +536,6 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
     assertThat(responseGetUser.getTotalCount()).isEqualTo(2);
     assertThat(responseGetUser2.getTotalCount()).isEqualTo(5);
     assertThat(responseGetUser3.getTotalCount()).isEqualTo(3);
-  }
-
-  @Test
-  void thatActionsCanNotBeGetForUserBecauseOfWrongUserIdInToken() {
-    // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList =
-        ActionFixtures.actionsDaoListHourOffsetOnly(
-            10,
-            "test-user",
-            OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    repository.saveAll(actionsDaoList);
-
-    ProblemApiDto response =
-        requestSpecification("wrong-userId")
-            .given()
-            .accept(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
-            .when()
-            .get("/v1/actions/test-user")
-            .then()
-            .header("X-Request-Id", X_REQUEST_ID)
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .extract()
-            .body()
-            .as(ProblemApiDto.class);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
-  }
-
-  @Test
-  void thatActionsCanNotBeGetForUserBecauseOfWrongHeader() {
-    // First mixed user actions for different users
-    List<ActionsDao> actionsDaoList =
-        ActionFixtures.actionsDaoListHourOffsetOnly(
-            10,
-            "test-user",
-            OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
-    repository.saveAll(actionsDaoList);
-
-    ProblemApiDto response =
-        wrongHeaderRequestSpecification("test-user")
-            .given()
-            .accept(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID))
-            .when()
-            .get("/v1/actions/test-user")
-            .then()
-            .header("X-Request-Id", X_REQUEST_ID)
-            .statusCode(HttpStatus.BAD_REQUEST.value())
-            .extract()
-            .body()
-            .as(ProblemApiDto.class);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
   }
 
   @Test
@@ -667,7 +577,6 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID2))
             .when()
             .get("/v1/actions/test-user?page=1&pageSize=20")
             .then()
@@ -681,7 +590,6 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID2))
             .when()
             .get("/v1/actions/test2-user")
             .then()
@@ -695,7 +603,6 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .header(new Header("X-Request-Id", X_REQUEST_ID2))
             .when()
             .get("/v1/actions/test3-user")
             .then()
