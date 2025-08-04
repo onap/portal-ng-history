@@ -1,60 +1,53 @@
 plugins {
-    id 'org.onap.portalng.history.java-application-conventions'
-    id 'org.openapi.generator'
-}
-
-ext {
-    openapiVersion = '7.13.0'
+  id 'java'
+  id 'org.openapi.generator'
 }
 
 dependencies {
-    compileOnly "org.openapitools:openapi-generator:$openapiVersion"
-    constraints {
-        compileOnly('jakarta.validation:jakarta.validation-api:3.0.2') {
-            because 'because min max validation wouldnt work with older versions of dependency'
-        }
-    }
+  compileOnly 'io.swagger.core.v3:swagger-annotations:2.2.34'
+  compileOnly 'org.springframework.boot:spring-boot-starter-webflux:3.5.4'
+  compileOnly 'jakarta.validation:jakarta.validation-api:3.1.1'
 }
 
 // https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-gradle-plugin/README.adoc
 openApiGenerate {
-    generatorName = "spring"
-    library = "spring-boot"
-    inputSpec = "$projectDir/src/main/resources/api/api.yml"
-    outputDir = "$buildDir/openapi"
-    configOptions = [
-        hideGenerationTimestamp: "true",
-        openApiNullable: "false",
-        skipDefaultInterface: "true",
-        dateLibrary: "java8",
-        interfaceOnly: "true",
-        useTags: "true",
-        useOptional: "true",
-        reactive: "true",
-        useSpringBoot3: "true"
-    ]
-    generateApiTests = false
-    generateApiDocumentation = false
-    generateModelTests = false
-    generateModelDocumentation = false
-    invokerPackage = "org.onap.portalng.history.openapi"
-    apiPackage = "org.onap.portalng.history.openapi.api"
-    modelPackage = "org.onap.portalng.history.openapi.model"
+  generatorName = "spring"
+  library = "spring-boot"
+  inputSpec = "$projectDir/src/main/resources/api/api.yml"
+  outputDir = "$buildDir/openapi"
+  configOptions = [
+    hideGenerationTimestamp: "true",
+    openApiNullable: "false",
+    skipDefaultInterface: "true",
+    dateLibrary: "java8",
+    interfaceOnly: "true",
+    useTags: "true",
+    useOptional: "true",
+    reactive: "true",
+    useSpringBoot3: "true"
+  ]
+  generateApiTests = false
+  generateApiDocumentation = false
+  generateModelTests = false
+  generateModelDocumentation = false
+  invokerPackage = "org.onap.portalng.history.openapi"
+  apiPackage = "org.onap.portalng.history.openapi.api"
+  modelPackage = "org.onap.portalng.history.openapi.model"
 }
 
 compileJava {
-    dependsOn tasks.openApiGenerate
+  dependsOn tasks.openApiGenerate
 }
 
 sourceSets {
-    main {
-        java {
-            srcDirs += file("$buildDir/openapi/src/main/java")
-        }
+  main {
+    java {
+      srcDirs += file("$buildDir/openapi/src/main/java")
     }
+  }
 }
 tasks.withType(Test).configureEach {
-    useJUnitPlatform()
+  useJUnitPlatform()
 }
 
 
