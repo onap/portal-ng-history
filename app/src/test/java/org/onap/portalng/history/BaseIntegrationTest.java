@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 /** Base class for all tests that has the common config including port, realm, logging and auth. */
@@ -148,7 +149,7 @@ public abstract class BaseIntegrationTest {
         .auth()
         .preemptive()
         .oauth2(idToken)
-        .header(IdTokenExchange.X_AUTH_IDENTITY_HEADER, "Bearer " + idToken);
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + idToken);
   }
 
   /**
@@ -166,7 +167,7 @@ public abstract class BaseIntegrationTest {
         .auth()
         .preemptive()
         .oauth2(idToken)
-        .header(IdTokenExchange.X_AUTH_IDENTITY_HEADER, "Bearer " + idToken);
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + idToken);
   }
 
   /**

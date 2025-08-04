@@ -47,43 +47,46 @@ public class ActionsController implements ActionsApi {
 
   @Override
   public Mono<ResponseEntity<ActionResponseApiDto>> createAction(
-      String userId,
+      String userIdUnused,
       Mono<CreateActionRequestApiDto> createActionRequest,
       ServerWebExchange exchange) {
 
-    return IdTokenExchange.validateUserId(userId, exchange)
-        .then(
-            createActionRequest.flatMap(
-                action ->
-                    actionsService.createActions(userId, action, historyConfig.getSaveInterval())))
+    return IdTokenExchange.extractUserId(exchange)
+        .flatMap(
+            userId ->
+                createActionRequest.flatMap(
+                    action ->
+                        actionsService.createActions(
+                            userId, action, historyConfig.getSaveInterval())))
         .map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<Object>> deleteActions(
-      String userId, Integer deleteAfterHours, ServerWebExchange exchange) {
+      String userIdUnused, Integer deleteAfterHours, ServerWebExchange exchange) {
 
-    return IdTokenExchange.validateUserId(userId, exchange)
-        .then(actionsService.deleteUserActions(userId, deleteAfterHours))
+    return IdTokenExchange.extractUserId(exchange)
+        .map(userId -> actionsService.deleteUserActions(userId, deleteAfterHours))
         .map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<ActionsListResponseApiDto>> getActions(
-      String userId,
+      String userIdUnused,
       Optional<Integer> page,
       Optional<Integer> pageSize,
       Optional<Integer> showLastHours,
       ServerWebExchange exchange) {
 
-    return IdTokenExchange.validateUserId(userId, exchange)
-        .then(
-            actionsService.getActions(
-                userId,
-                page.orElse(1),
-                pageSize.orElse(10),
-                showLastHours.orElse(historyConfig.getSaveInterval()),
-                historyConfig.getSaveInterval()))
+    return IdTokenExchange.extractUserId(exchange)
+        .flatMap(
+            userId ->
+                actionsService.getActions(
+                    userId,
+                    page.orElse(1),
+                    pageSize.orElse(10),
+                    showLastHours.orElse(historyConfig.getSaveInterval()),
+                    historyConfig.getSaveInterval()))
         .map(ResponseEntity::ok);
   }
 
