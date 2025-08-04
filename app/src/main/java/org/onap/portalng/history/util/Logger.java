@@ -59,7 +59,7 @@ public class Logger {
    * @param msg message which should be written
    * @param id of the related object of the message
    */
-  public static void errorLog(String xRequestId, String msg, String id) {
-    log.info("History - error - X-Request-Id {} {} {} not found", xRequestId, msg, id);
+  public static void errorLog(String msg, String id) {
+    log.info("History - error - {} {} not found", msg, id);
   }
 }

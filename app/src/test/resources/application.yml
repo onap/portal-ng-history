@@ -59,8 +59,8 @@ management:
       enabled: true
 
 logger:
-  traceIdHeaderName: "X-Request-Id"
+  traceIdHeaderName: x-b3-traceid
   enabled: true
   excludePaths:
     - "/actuator/**"
- 
+

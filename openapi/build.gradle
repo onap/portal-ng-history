@@ -33,6 +33,7 @@ openApiGenerate {
   invokerPackage = "org.onap.portalng.history.openapi"
   apiPackage = "org.onap.portalng.history.openapi.api"
   modelPackage = "org.onap.portalng.history.openapi.model"
+  modelNameSuffix = "ApiDto"
 }
 
 compileJava {

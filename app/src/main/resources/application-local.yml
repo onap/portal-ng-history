@@ -38,4 +38,5 @@ management:
     java:
       enabled: true
 
-
+logger:
+  traceIdHeaderName: x-b3-traceid
