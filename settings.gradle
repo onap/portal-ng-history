@@ -1,21 +1,21 @@
 // Centrally declare plugin versions here
 // https://docs.gradle.org/current/userguide/plugins.html#sec:plugin_version_management
 pluginManagement {
-    plugins {
-        id 'org.springframework.boot' version '3.4.5'
-        id 'io.spring.dependency-management' version '1.1.7'
-        id 'com.github.hierynomus.license' version '0.16.1'
-        id 'org.openapi.generator' version '7.0.0-beta'
-        id 'com.gorylenko.gradle-git-properties' version '2.5.0'
-    }
-    // https://docs.gradle.org/current/userguide/plugins.html#sec:custom_plugin_repositories
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        mavenCentral()
-    }
+  plugins {
+    id 'org.springframework.boot' version '3.5.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.hierynomus.license' version '0.16.1'
+    id 'org.openapi.generator' version '7.14.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.5.2'
+    id 'com.diffplug.spotless' version '7.2.1'
+  }
+  // https://docs.gradle.org/current/userguide/plugins.html#sec:custom_plugin_repositories
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
 }
 
 rootProject.name = 'history'
-include('app','openapi')
+include 'openapi'
+include 'app'

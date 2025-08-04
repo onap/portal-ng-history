@@ -1,141 +1,143 @@
 plugins {
-    id 'org.onap.portalng.history.java-application-conventions'
-    id 'io.spring.dependency-management'
-    id 'org.springframework.boot'
-    id 'jacoco'
-    id 'com.github.hierynomus.license'
-    id 'com.gorylenko.gradle-git-properties'
+  id 'java'
+  id 'application'
+  id 'io.spring.dependency-management'
+  id 'org.springframework.boot'
+  id 'jacoco'
+  id 'com.github.hierynomus.license'
+  id 'com.gorylenko.gradle-git-properties'
+  id 'com.diffplug.spotless'
 }
 apply from: "${rootDir}/gradle/verify-licenses.gradle"
 
 def appVersion = getAppVersion()
-sourceCompatibility = '17'
-targetCompatibility = '17'
 
 springBoot {
-    buildInfo {
-        properties {
-            artifact = "org-onap-portalng-history"
-            version = appVersion
-            group = "org.onap.portalng"
-            name = "History service that saves user actions"
-        }
+  buildInfo {
+    properties {
+      artifact = "org-onap-portalng-history"
+      version = appVersion
+      group = "org.onap.portalng"
+      name = "History service that saves user actions"
     }
+  }
 }
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
 }
 
 ext {
-        problemVersion = '0.27.1'
-        problemSpringVersion = '0.27.0'
-        logbackVersion = '1.5.18'
-        logstashLogbackVersion = '8.1'
-        springCloudWiremockVersion = '4.1.5'
-        micrometerVersion = '1.0.0'
-        liquibaseCoreVersion = '4.31.1'
+  problemVersion = '0.27.1'
+  swaggerAnnotationsVersion = '2.2.34'
+  problemSpringVersion = '0.29.1'
+  logbackVersion = '1.5.18'
+  logstashLogbackVersion = '8.1'
+  springCloudWiremockVersion = '4.3.0'
 }
 
 repositories {
-	mavenCentral()
-	maven {
-		url "https://plugins.gradle.org/m2/"
-	}
+  mavenCentral()
+  maven {
+    url "https://plugins.gradle.org/m2/"
+  }
 }
 
 dependencies {
-    implementation project(':openapi')
-    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation "org.zalando:problem:$problemVersion"
-    implementation "org.zalando:jackson-datatype-problem:$problemVersion"
-    implementation "org.zalando:problem-spring-webflux:$problemSpringVersion"
-    implementation "ch.qos.logback:logback-classic:$logbackVersion"
-    implementation "ch.qos.logback:logback-core:$logbackVersion"
-    implementation "net.logstash.logback:logstash-logback-encoder:$logstashLogbackVersion"
+  implementation project(':openapi')
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation "org.zalando:problem:$problemVersion"
+  implementation "org.zalando:jackson-datatype-problem:$problemVersion"
+  implementation "org.zalando:problem-spring-webflux:$problemSpringVersion"
+  implementation "ch.qos.logback:logback-classic:$logbackVersion"
+  implementation "ch.qos.logback:logback-core:$logbackVersion"
+  implementation "net.logstash.logback:logstash-logback-encoder:$logstashLogbackVersion"
 
-    implementation "org.liquibase:liquibase-core:$liquibaseCoreVersion"
-    implementation 'org.postgresql:postgresql'
+  implementation "org.liquibase:liquibase-core"
+  implementation 'org.postgresql:postgresql'
 
-    implementation(platform("io.micrometer:micrometer-tracing-bom:$micrometerVersion"))
-    implementation("io.micrometer:micrometer-tracing")
-    implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    implementation("io.opentelemetry:opentelemetry-exporter-zipkin")
-    implementation 'io.micrometer:micrometer-registry-prometheus'
-    implementation 'org.apache.commons:commons-lang3:3.15.0'
+  implementation "io.micrometer:micrometer-tracing"
+  implementation "io.micrometer:micrometer-tracing-bridge-otel"
+  implementation "io.opentelemetry:opentelemetry-exporter-zipkin"
+  implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    compileOnly 'org.projectlombok:lombok'
+  compileOnly 'org.projectlombok:lombok'
+  compileOnly "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+  developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
+  annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+  annotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.projectreactor:reactor-test'
-    testImplementation 'io.rest-assured:rest-assured'
-    testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock:$springCloudWiremockVersion"
-    testImplementation 'org.testcontainers:postgresql'
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'org.springframework.security:spring-security-test'
+  testImplementation 'io.projectreactor:reactor-test'
+  testImplementation 'io.rest-assured:rest-assured'
+  testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock:$springCloudWiremockVersion"
+  testImplementation 'org.testcontainers:postgresql'
+  testCompileOnly 'org.projectlombok:lombok'
+  testCompileOnly "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
+  testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 test {
-    useJUnitPlatform()
-    finalizedBy(jacocoTestReport)
+  useJUnitPlatform()
+  finalizedBy(jacocoTestReport)
 }
 
 jacocoTestReport {
-    reports {
-        xml.required = true
-    }
+  reports {
+    xml.required = true
+  }
 }
 
 application {
-    // Define the main class for the application.
-    mainClass = 'org.onap.portalng.history.HistoryApplication'
+  // Define the main class for the application.
+  mainClass = 'org.onap.portalng.history.HistoryApplication'
 }
 
-sourceCompatibility = '17'
-targetCompatibility = '17'
-
 downloadLicenses {
-    dependencyConfiguration = 'implementation'
-    includeProjectDependencies = false
+  dependencyConfiguration = 'implementation'
+  includeProjectDependencies = false
 }
 
 license {
-    ignoreFailures = true
-    header = project.file('LICENSE_HEADER')
-    includes(["**/*.java"])
-    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+  ignoreFailures = true
+  header = project.file('LICENSE_HEADER')
+  includes(["**/*.java"])
+  ext.year = Calendar.getInstance().get(Calendar.YEAR)
 }
 configurations.implementation.setCanBeResolved(true)
 
 def String getAppVersion() {
-	Properties versionProperties = getVersionProperties()
-	String major = versionProperties.getProperty('major')
-	String minor = versionProperties.getProperty('minor')
-	String patch = versionProperties.getProperty('patch')
-	return major + '.' + minor + '.' + patch
+  Properties versionProperties = getVersionProperties()
+  String major = versionProperties.getProperty('major')
+  String minor = versionProperties.getProperty('minor')
+  String patch = versionProperties.getProperty('patch')
+  return major + '.' + minor + '.' + patch
 }
 def Properties getVersionProperties() {
-	def versionProperties = new Properties()
-	rootProject.file('version.properties').withInputStream {
-		versionProperties.load(it)
-	}
-	return versionProperties
+  def versionProperties = new Properties()
+  rootProject.file('version.properties').withInputStream {
+    versionProperties.load(it)
+  }
+  return versionProperties
 }
 
 gitProperties {
-    // if .git directory is on the same level as the root project
-    dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
+  // if .git directory is on the same level as the root project
+  dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
 }
+
+// spotless {
+//   java {
+//     googleJavaFormat()
+//   }
+// }
