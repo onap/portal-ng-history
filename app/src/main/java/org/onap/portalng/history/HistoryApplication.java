@@ -24,7 +24,6 @@
  */
 package org.onap.portalng.history;
 
-
 import org.onap.portalng.history.configuration.HistoryConfig;
 import org.onap.portalng.history.logging.LoggerProperties;
 import org.springframework.boot.SpringApplication;
@@ -34,7 +33,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @SpringBootApplication
 @EnableConfigurationProperties({HistoryConfig.class, LoggerProperties.class})
 public class HistoryApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(HistoryApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(HistoryApplication.class, args);
+  }
 }

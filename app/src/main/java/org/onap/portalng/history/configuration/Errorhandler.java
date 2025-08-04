@@ -23,7 +23,6 @@ package org.onap.portalng.history.configuration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.onap.portalng.history.exception.ProblemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -39,33 +38,38 @@ import reactor.core.publisher.Mono;
 @Component
 public class Errorhandler implements ErrorWebExceptionHandler {
 
-  @Autowired
-  ObjectMapper objectMapper;
+  @Autowired ObjectMapper objectMapper;
 
   /**
-   * Override the handle methode to implement custom error handling
-   * Set response status code to BAD REQUEST, set header content-type and fill the body with the Problem object along the API model
+   * Override the handle methode to implement custom error handling Set response status code to BAD
+   * REQUEST, set header content-type and fill the body with the Problem object along the API model
    */
   @Override
   public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
     ServerHttpResponse httpResponse = exchange.getResponse();
     setResponseStatus(httpResponse, ex);
     httpResponse.getHeaders().add("Content-Type", "application/problem+json");
-    return httpResponse.writeWith(Mono.fromSupplier(() -> {
-      DataBufferFactory bufferFactory = httpResponse.bufferFactory();
-      try {
-         return
-            (httpResponse.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR)
-                ? httpResponse.bufferFactory().wrap(objectMapper.writeValueAsBytes(setProblemException(httpResponse, ex.getMessage())))
-                : httpResponse.bufferFactory().wrap(objectMapper.writeValueAsBytes(ex));
-      } catch (JsonProcessingException e) {
-        return bufferFactory.wrap(new byte[0]);
-      }
-    }));
+    return httpResponse.writeWith(
+        Mono.fromSupplier(
+            () -> {
+              DataBufferFactory bufferFactory = httpResponse.bufferFactory();
+              try {
+                return (httpResponse.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR)
+                    ? httpResponse
+                        .bufferFactory()
+                        .wrap(
+                            objectMapper.writeValueAsBytes(
+                                setProblemException(httpResponse, ex.getMessage())))
+                    : httpResponse.bufferFactory().wrap(objectMapper.writeValueAsBytes(ex));
+              } catch (JsonProcessingException e) {
+                return bufferFactory.wrap(new byte[0]);
+              }
+            }));
   }
 
   /**
    * Set the response status
+   *
    * @param httpResponse response which status code should be set
    * @param ex throwable exception to identify the Problem class
    */
@@ -79,17 +83,17 @@ public class Errorhandler implements ErrorWebExceptionHandler {
 
   /**
    * Build a problem exception and set the response status code to BAD REQUEST for every response
+   *
    * @param httpResponse response which status code should be set
    * @param message for the detail of the problem exception
    * @return problem exception instance
    */
-  private ProblemException setProblemException(ServerHttpResponse httpResponse, String message){
+  private ProblemException setProblemException(ServerHttpResponse httpResponse, String message) {
     httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
     return ProblemException.builder()
         .status(Status.INTERNAL_SERVER_ERROR)
         .title(Status.INTERNAL_SERVER_ERROR.getReasonPhrase())
         .detail(message)
         .build();
-
   }
 }

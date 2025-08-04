@@ -21,7 +21,7 @@
 
 package org.onap.portalng.history.configuration;
 
-import org.onap.portalng.history.util.Logger;
+import java.util.List;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.reactive.ServerWebExchangeContextFilter;
 import org.springframework.web.server.ServerWebExchange;
@@ -29,18 +29,16 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Component
 public class RequestIdInterceptor implements WebFilter {
-  public static final String EXCHANGE_CONTEXT_ATTRIBUTE = ServerWebExchangeContextFilter.class.getName()
-      + ".EXCHANGE_CONTEXT";
+  public static final String EXCHANGE_CONTEXT_ATTRIBUTE =
+      ServerWebExchangeContextFilter.class.getName() + ".EXCHANGE_CONTEXT";
 
   public static final String X_REQUEST_ID = "X-Request-Id";
 
   /**
-   * Override a web filter to write log entries for every request and response and
-   * add header in response with X_REQUEST_ID
+   * Override a web filter to write log entries for every request and response and add header in
+   * response with X_REQUEST_ID
    */
   @Override
   public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {

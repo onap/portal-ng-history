@@ -136,8 +136,8 @@ gitProperties {
   dotGitDirectory = project.rootProject.layout.projectDirectory.dir(".git")
 }
 
-// spotless {
-//   java {
-//     googleJavaFormat()
-//   }
-// }
+spotless {
+  java {
+    googleJavaFormat()
+  }
+}

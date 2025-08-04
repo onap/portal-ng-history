@@ -21,13 +21,12 @@
 
 package org.onap.portalng.history.logging;
 
+import java.util.Map;
+import java.util.function.BiConsumer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
-
-import java.util.Map;
-import java.util.function.BiConsumer;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoggingHelper {

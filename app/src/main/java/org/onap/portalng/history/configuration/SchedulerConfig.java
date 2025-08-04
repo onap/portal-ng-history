@@ -22,7 +22,6 @@
 package org.onap.portalng.history.configuration;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.onap.portalng.history.services.ActionsService;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,17 +35,17 @@ public class SchedulerConfig {
   private final ActionsService actionsService;
   private final HistoryConfig historyConfig;
 
-  public SchedulerConfig(ActionsService actionsService, HistoryConfig historyConfig){
+  public SchedulerConfig(ActionsService actionsService, HistoryConfig historyConfig) {
     this.actionsService = actionsService;
     this.historyConfig = historyConfig;
   }
 
   /**
-   * This method will be trigger by Spring Boot scheduler.
-   * The cron execution time is configured in the application properties as well as the save interval.
+   * This method will be trigger by Spring Boot scheduler. The cron execution time is configured in
+   * the application properties as well as the save interval.
    */
-  @Scheduled(cron="${history.delete-interval}")
-  public void runDeleteActions(){
+  @Scheduled(cron = "${history.delete-interval}")
+  public void runDeleteActions() {
     actionsService.deleteActions(historyConfig.getSaveInterval());
     log.info("Delete actions in scheduled job");
   }

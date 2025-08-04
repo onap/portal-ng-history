@@ -21,6 +21,7 @@
 
 package org.onap.portalng.history.exception;
 
+import java.net.URI;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,10 +32,9 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.StatusType;
 
-import java.net.URI;
-
 /**
- * Default problem exception. This class has the same structure as the problem response model from the api.
+ * Default problem exception. This class has the same structure as the problem response model from
+ * the api.
  */
 @Data
 @Builder
@@ -51,5 +51,4 @@ public class ProblemException extends AbstractThrowableProblem {
   @Builder.Default private final String detail = "Please add more details here";
 
   @Builder.Default private final URI instance = null;
-
 }

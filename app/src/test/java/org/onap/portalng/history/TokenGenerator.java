@@ -32,12 +32,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -45,6 +39,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class TokenGenerator {

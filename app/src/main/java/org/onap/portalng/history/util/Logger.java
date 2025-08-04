@@ -21,20 +21,19 @@
 
 package org.onap.portalng.history.util;
 
+import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-
-import java.net.URI;
 
 @Slf4j
 public class Logger {
 
-  private Logger(){}
+  private Logger() {}
 
   /**
    * Write log to stdout for incoming request
+   *
    * @param xRequestId from the request header
    * @param methode http methode which is invoke
    * @param path which is called be the request
@@ -45,6 +44,7 @@ public class Logger {
 
   /**
    * Write log to stdout for the outgoing response
+   *
    * @param xRequestId from the request header
    * @param code http status of the response
    */
@@ -54,12 +54,12 @@ public class Logger {
 
   /**
    * Write error log to stdout
+   *
    * @param xRequestId from the request header
    * @param msg message which should be written
    * @param id of the related object of the message
    */
   public static void errorLog(String xRequestId, String msg, String id) {
-    log.info(
-        "History - error - X-Request-Id {} {} {} not found", xRequestId, msg, id);
+    log.info("History - error - X-Request-Id {} {} {} not found", xRequestId, msg, id);
   }
 }

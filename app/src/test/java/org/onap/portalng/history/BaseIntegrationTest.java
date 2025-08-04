@@ -24,11 +24,12 @@ package org.onap.portalng.history;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.nimbusds.jose.jwk.JWKSet;
-
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.onap.portalng.history.util.IdTokenExchange;
@@ -39,23 +40,21 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.MediaType;
 
-import java.util.List;
-import java.util.UUID;
-
 /** Base class for all tests that has the common config including port, realm, logging and auth. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 public abstract class BaseIntegrationTest {
 
-//  @TestConfiguration
-//  public static class Config {
-//    @Bean
-//    WireMockConfigurationCustomizer optionsCustomizer() {
-//      return options -> options.extensions(new ResponseTemplateTransformer(true));
-//    }
-//  }
+  //  @TestConfiguration
+  //  public static class Config {
+  //    @Bean
+  //    WireMockConfigurationCustomizer optionsCustomizer() {
+  //      return options -> options.extensions(new ResponseTemplateTransformer(true));
+  //    }
+  //  }
 
   @LocalServerPort protected int port;
+
   @Value("${history.realm}")
   protected String realm;
 
@@ -77,20 +76,22 @@ public abstract class BaseIntegrationTest {
 
     WireMock.stubFor(
         WireMock.get(
-                WireMock.urlMatching(
-                    "/realms/%s/protocol/openid-connect/certs".formatted(realm)))
+                WireMock.urlMatching("/realms/%s/protocol/openid-connect/certs".formatted(realm)))
             .willReturn(
                 WireMock.aResponse()
                     .withHeader("Content-Type", JWKSet.MIME_TYPE)
                     .withBody(tokenGenerator.getJwkSet().toString())));
 
     final TokenGenerator.TokenGeneratorConfig config =
-        TokenGenerator.TokenGeneratorConfig.builder().port(port).realm(realm).sub("test-user").build();
+        TokenGenerator.TokenGeneratorConfig.builder()
+            .port(port)
+            .realm(realm)
+            .sub("test-user")
+            .build();
 
     WireMock.stubFor(
         WireMock.post(
-                WireMock.urlMatching(
-                    "/realms/%s/protocol/openid-connect/token".formatted(realm)))
+                WireMock.urlMatching("/realms/%s/protocol/openid-connect/token".formatted(realm)))
             .withBasicAuth("test", "test")
             .withRequestBody(WireMock.containing("grant_type=client_credentials"))
             .willReturn(
@@ -110,7 +111,7 @@ public abstract class BaseIntegrationTest {
                             .toString())));
   }
 
-    /**
+  /**
    * Builds an OAuth2 configuration including the roles, port and realm. This config can be used to
    * generate OAuth2 access tokens.
    *
@@ -118,7 +119,8 @@ public abstract class BaseIntegrationTest {
    * @param roles the roles used for RBAC
    * @return the OAuth2 configuration
    */
-  protected TokenGenerator.TokenGeneratorConfig getTokenGeneratorConfig(String sub, List<String> roles) {
+  protected TokenGenerator.TokenGeneratorConfig getTokenGeneratorConfig(
+      String sub, List<String> roles) {
     return TokenGenerator.TokenGeneratorConfig.builder()
         .port(port)
         .sub(sub)
@@ -135,10 +137,12 @@ public abstract class BaseIntegrationTest {
   /**
    * Object to store common attributes of requests that are going to be made. Adds an Identity
    * header for the <code>onap_admin</code> role to the request.
+   *
    * @return the definition of the incoming request (northbound)
    */
   protected RequestSpecification requestSpecification() {
-    final String idToken = tokenGenerator.generateToken(getTokenGeneratorConfig("test-user", List.of("foo")));
+    final String idToken =
+        tokenGenerator.generateToken(getTokenGeneratorConfig("test-user", List.of("foo")));
 
     return unauthenticatedRequestSpecification()
         .auth()
@@ -150,11 +154,13 @@ public abstract class BaseIntegrationTest {
   /**
    * Object to store common attributes of requests that are going to be made. Adds an Identity
    * header for the <code>onap_admin</code> role to the request.
+   *
    * @param userId the userId that should be contained in the incoming request
    * @return the definition of the incoming request (northbound)
    */
   protected RequestSpecification requestSpecification(String userId) {
-    final String idToken = tokenGenerator.generateToken(getTokenGeneratorConfig(userId, List.of("foo")));
+    final String idToken =
+        tokenGenerator.generateToken(getTokenGeneratorConfig(userId, List.of("foo")));
 
     return unauthenticatedRequestSpecification()
         .auth()
@@ -166,11 +172,13 @@ public abstract class BaseIntegrationTest {
   /**
    * Object to store common attributes of requests that are going to be made. Adds an Identity
    * header for the <code>onap_admin</code> role to the request.
+   *
    * @param userId the userId that should be contained in the incoming request
    * @return the definition of the incoming request (northbound)
    */
   protected RequestSpecification wrongHeaderRequestSpecification(String userId) {
-    final String idToken = tokenGenerator.generateToken(getTokenGeneratorConfig(userId, List.of("foo")));
+    final String idToken =
+        tokenGenerator.generateToken(getTokenGeneratorConfig(userId, List.of("foo")));
 
     return unauthenticatedRequestSpecification()
         .auth()

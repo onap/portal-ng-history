@@ -21,16 +21,13 @@
 
 package org.onap.portalng.history.actions;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.onap.portalng.history.openapi.model.CreateActionRequest;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.onap.portalng.history.entities.ActionsDao;
+import org.onap.portalng.history.openapi.model.CreateActionRequest;
 
 public class ActionFixtures {
 
@@ -42,7 +39,16 @@ public class ActionFixtures {
     for (Integer i = 1; i <= numberOfActions; i++) {
       createActionRequestList.add(
           generateActionRequest(
-              "Instantiation", "create", "action" + i, i.toString(), "SO", i, i, i, userId, createdAt));
+              "Instantiation",
+              "create",
+              "action" + i,
+              i.toString(),
+              "SO",
+              i,
+              i,
+              i,
+              userId,
+              createdAt));
     }
     return createActionRequestList;
   }
@@ -53,7 +59,16 @@ public class ActionFixtures {
     for (Integer i = 1; i <= numberOfActions; i++) {
       createActionRequestList.add(
           generateActionRequest(
-              "Instantiation", "create", "action" + i, i.toString(), "SO", i, 0, 0, userId, createdAt));
+              "Instantiation",
+              "create",
+              "action" + i,
+              i.toString(),
+              "SO",
+              i,
+              0,
+              0,
+              userId,
+              createdAt));
     }
     return createActionRequestList;
   }
@@ -79,7 +94,8 @@ public class ActionFixtures {
     return new CreateActionRequest()
         .userId(userId)
         .action(actionDto)
-        .actionCreatedAt(createdAt.minusHours(deltaHours).minusMinutes(deltaMinutes).minusSeconds(deltaSeconds));
+        .actionCreatedAt(
+            createdAt.minusHours(deltaHours).minusMinutes(deltaMinutes).minusSeconds(deltaSeconds));
   }
 
   public static List<ActionsDao> actionsDaoList(
@@ -88,7 +104,16 @@ public class ActionFixtures {
     for (Integer i = 1; i <= numberOfActions; i++) {
       actionsDaoList.add(
           generateActionsDao(
-              "Instantiation", "create", "action" + i, i.toString(), "SO", i, i, i, userId, createdAt));
+              "Instantiation",
+              "create",
+              "action" + i,
+              i.toString(),
+              "SO",
+              i,
+              i,
+              i,
+              userId,
+              createdAt));
     }
     return actionsDaoList;
   }
@@ -114,8 +139,14 @@ public class ActionFixtures {
     ActionsDao actionsDao = new ActionsDao();
     actionsDao.setUserId(userId);
     actionsDao.setAction(objectMapper.valueToTree(actionDto));
-    actionsDao.setActionCreatedAt(new Date(
-        createdAt.minusHours(deltaHours).minusMinutes(deltaMinutes).minusSeconds(deltaSeconds).toEpochSecond() * 1000));
+    actionsDao.setActionCreatedAt(
+        new Date(
+            createdAt
+                    .minusHours(deltaHours)
+                    .minusMinutes(deltaMinutes)
+                    .minusSeconds(deltaSeconds)
+                    .toEpochSecond()
+                * 1000));
     return actionsDao;
   }
 
@@ -125,7 +156,16 @@ public class ActionFixtures {
     for (Integer i = 1; i <= numberOfActions; i++) {
       actionsDaoList.add(
           generateActionsDao(
-              "Instantiation", "create", "action" + i, i.toString(), "SO", i, 0, 0, userId, createdAt));
+              "Instantiation",
+              "create",
+              "action" + i,
+              i.toString(),
+              "SO",
+              i,
+              0,
+              0,
+              userId,
+              createdAt));
     }
     return actionsDaoList;
   }

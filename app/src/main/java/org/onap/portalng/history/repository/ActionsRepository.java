@@ -23,7 +23,6 @@ package org.onap.portalng.history.repository;
 
 import java.util.Date;
 import java.util.List;
-
 import org.onap.portalng.history.entities.ActionsDao;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,7 +31,8 @@ public interface ActionsRepository extends JpaRepository<ActionsDao, String> {
 
   List<ActionsDao> findAllByActionCreatedAtAfter(Pageable pageable, Date actionCreatedAt);
 
-  List<ActionsDao> findAllByUserIdAndActionCreatedAtAfter(Pageable pageable, String userId, Date actionCreatedAt);
+  List<ActionsDao> findAllByUserIdAndActionCreatedAtAfter(
+      Pageable pageable, String userId, Date actionCreatedAt);
 
   long deleteAllByUserIdAndActionCreatedAtIsBefore(String userId, Date actionCreatedAt);
 

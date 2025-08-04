@@ -21,15 +21,14 @@
 
 package org.onap.portalng.history.logging;
 
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.server.ServerWebExchange;
-
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebExchangeUtils {
