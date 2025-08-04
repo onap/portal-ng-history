@@ -24,9 +24,9 @@ package org.onap.portalng.history.controller;
 import java.util.Optional;
 import org.onap.portalng.history.configuration.HistoryConfig;
 import org.onap.portalng.history.openapi.api.ActionsApi;
-import org.onap.portalng.history.openapi.model.ActionResponse;
-import org.onap.portalng.history.openapi.model.ActionsListResponse;
-import org.onap.portalng.history.openapi.model.CreateActionRequest;
+import org.onap.portalng.history.openapi.model.ActionResponseApiDto;
+import org.onap.portalng.history.openapi.model.ActionsListResponseApiDto;
+import org.onap.portalng.history.openapi.model.CreateActionRequestApiDto;
 import org.onap.portalng.history.services.ActionsService;
 import org.onap.portalng.history.util.IdTokenExchange;
 import org.springframework.http.ResponseEntity;
@@ -46,54 +46,49 @@ public class ActionsController implements ActionsApi {
   }
 
   @Override
-  public Mono<ResponseEntity<ActionResponse>> createAction(
+  public Mono<ResponseEntity<ActionResponseApiDto>> createAction(
       String userId,
-      String xRequestId,
-      Mono<CreateActionRequest> createActionRequest,
+      Mono<CreateActionRequestApiDto> createActionRequest,
       ServerWebExchange exchange) {
 
-    return IdTokenExchange.validateUserId(userId, exchange, xRequestId)
+    return IdTokenExchange.validateUserId(userId, exchange)
         .then(
             createActionRequest.flatMap(
                 action ->
-                    actionsService.createActions(
-                        userId, action, historyConfig.getSaveInterval(), xRequestId)))
+                    actionsService.createActions(userId, action, historyConfig.getSaveInterval())))
         .map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<Object>> deleteActions(
-      String userId, String xRequestId, Integer deleteAfterHours, ServerWebExchange exchange) {
+      String userId, Integer deleteAfterHours, ServerWebExchange exchange) {
 
-    return IdTokenExchange.validateUserId(userId, exchange, xRequestId)
-        .then(actionsService.deleteUserActions(userId, deleteAfterHours, xRequestId))
+    return IdTokenExchange.validateUserId(userId, exchange)
+        .then(actionsService.deleteUserActions(userId, deleteAfterHours))
         .map(ResponseEntity::ok);
   }
 
   @Override
-  public Mono<ResponseEntity<ActionsListResponse>> getActions(
+  public Mono<ResponseEntity<ActionsListResponseApiDto>> getActions(
       String userId,
-      String xRequestId,
       Optional<Integer> page,
       Optional<Integer> pageSize,
       Optional<Integer> showLastHours,
       ServerWebExchange exchange) {
 
-    return IdTokenExchange.validateUserId(userId, exchange, xRequestId)
+    return IdTokenExchange.validateUserId(userId, exchange)
         .then(
             actionsService.getActions(
                 userId,
                 page.orElse(1),
                 pageSize.orElse(10),
                 showLastHours.orElse(historyConfig.getSaveInterval()),
-                historyConfig.getSaveInterval(),
-                xRequestId))
+                historyConfig.getSaveInterval()))
         .map(ResponseEntity::ok);
   }
 
   @Override
-  public Mono<ResponseEntity<ActionsListResponse>> listActions(
-      String xRequestId,
+  public Mono<ResponseEntity<ActionsListResponseApiDto>> listActions(
       Optional<Integer> page,
       Optional<Integer> pageSize,
       Optional<Integer> showLastHours,
@@ -104,8 +99,7 @@ public class ActionsController implements ActionsApi {
             page.orElse(1),
             pageSize.orElse(10),
             showLastHours.orElse(historyConfig.getSaveInterval()),
-            historyConfig.getSaveInterval(),
-            xRequestId)
+            historyConfig.getSaveInterval())
         .map(ResponseEntity::ok);
   }
 }

@@ -36,10 +36,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.onap.portalng.history.BaseIntegrationTest;
 import org.onap.portalng.history.entities.ActionsDao;
-import org.onap.portalng.history.openapi.model.ActionResponse;
-import org.onap.portalng.history.openapi.model.ActionsListResponse;
-import org.onap.portalng.history.openapi.model.CreateActionRequest;
-import org.onap.portalng.history.openapi.model.Problem;
+import org.onap.portalng.history.openapi.model.ActionResponseApiDto;
+import org.onap.portalng.history.openapi.model.ActionsListResponseApiDto;
+import org.onap.portalng.history.openapi.model.CreateActionRequestApiDto;
+import org.onap.portalng.history.openapi.model.ProblemApiDto;
 import org.onap.portalng.history.repository.ActionsRepository;
 import org.onap.portalng.history.services.ActionsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void thatUserCanHaveNoHistoryYet() throws JsonProcessingException {
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -78,7 +78,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertNotNull(response);
     assertThat(response.getTotalCount()).isEqualTo(0);
@@ -93,15 +93,15 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
     actionDto.setDownStreamSystem("SO");
     actionDto.setMessage("no details");
 
-    CreateActionRequest actionRequest =
-        new CreateActionRequest()
+    CreateActionRequestApiDto actionRequest =
+        new CreateActionRequestApiDto()
             .actionCreatedAt(
                 OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC)
                     .truncatedTo(ChronoUnit.SECONDS))
             .userId("test-user")
             .action(actionDto);
 
-    ActionResponse response =
+    ActionResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -115,7 +115,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionResponse.class);
+            .as(ActionResponseApiDto.class);
 
     assertThat(response.getActionCreatedAt())
         .isEqualTo(
@@ -136,7 +136,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             "test-user",
             OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository.saveAll(actionsDaoList);
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -149,7 +149,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isEqualTo(10);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
@@ -172,7 +172,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             "test-user",
             OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository.saveAll(actionsDaoList);
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -185,7 +185,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isEqualTo(5);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
@@ -228,7 +228,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
                 .truncatedTo(ChronoUnit.SECONDS)));
     repository.saveAll(actionsDaoList);
 
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -241,7 +241,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isEqualTo(5);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
@@ -259,7 +259,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             20, "test-user", OffsetDateTime.now().plusMinutes(30).truncatedTo(ChronoUnit.SECONDS));
     repository.saveAll(actionsDaoList);
 
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -272,7 +272,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isEqualTo(12);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
@@ -296,7 +296,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
                 .truncatedTo(ChronoUnit.SECONDS));
     repository.saveAll(actionsDaoList);
 
-    Problem response =
+    ProblemApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -309,7 +309,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .extract()
             .body()
-            .as(Problem.class);
+            .as(ProblemApiDto.class);
 
     assertThat(response.getStatus()).isEqualTo(500);
   }
@@ -332,7 +332,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
 
     repository.saveAll(actionsDaoList);
 
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -345,7 +345,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isEqualTo(2);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
@@ -381,7 +381,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
 
     repository.saveAll(actionsDaoList);
 
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -394,7 +394,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isEqualTo(10);
   }
@@ -427,7 +427,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
     actionsDaoList.addAll(actionsDaoList4);
     repository.saveAll(actionsDaoList);
 
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -440,7 +440,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isEqualTo(10);
     assertThat(response.getActionsList().get(0).getSaveInterval()).isEqualTo(saveInterval);
@@ -474,7 +474,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
     actionsDaoList.addAll(actionsDaoList4);
     repository.saveAll(actionsDaoList);
 
-    ActionsListResponse response =
+    ActionsListResponseApiDto response =
         requestSpecification("test4-user")
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -487,7 +487,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(response.getTotalCount()).isZero();
   }
@@ -520,9 +520,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
         .statusCode(HttpStatus.OK.value())
         .extract()
         .body()
-        .as(ActionsListResponse.class);
+        .as(ActionsListResponseApiDto.class);
 
-    ActionsListResponse responseGetUser =
+    ActionsListResponseApiDto responseGetUser =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -535,9 +535,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
-    ActionsListResponse responseGetUser2 =
+    ActionsListResponseApiDto responseGetUser2 =
         requestSpecification("test2-user")
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -550,9 +550,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
-    ActionsListResponse responseGetUser3 =
+    ActionsListResponseApiDto responseGetUser3 =
         requestSpecification("test3-user")
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -565,7 +565,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(responseGetUser.getTotalCount()).isEqualTo(2);
     assertThat(responseGetUser2.getTotalCount()).isEqualTo(5);
@@ -582,7 +582,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository.saveAll(actionsDaoList);
 
-    Problem response =
+    ProblemApiDto response =
         requestSpecification("wrong-userId")
             .given()
             .accept(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
@@ -594,7 +594,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .extract()
             .body()
-            .as(Problem.class);
+            .as(ProblemApiDto.class);
 
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -610,7 +610,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS));
     repository.saveAll(actionsDaoList);
 
-    Problem response =
+    ProblemApiDto response =
         wrongHeaderRequestSpecification("test-user")
             .given()
             .accept(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
@@ -622,7 +622,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.BAD_REQUEST.value())
             .extract()
             .body()
-            .as(Problem.class);
+            .as(ProblemApiDto.class);
 
     assertThat(response).isNotNull();
     assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
@@ -662,7 +662,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
 
     actionsService.deleteActions(72).block();
 
-    ActionsListResponse responseGetUser =
+    ActionsListResponseApiDto responseGetUser =
         requestSpecification()
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -674,9 +674,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
-    ActionsListResponse responseGetUser2 =
+    ActionsListResponseApiDto responseGetUser2 =
         requestSpecification("test2-user")
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -688,9 +688,9 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
-    ActionsListResponse responseGetUser3 =
+    ActionsListResponseApiDto responseGetUser3 =
         requestSpecification("test3-user")
             .given()
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -702,7 +702,7 @@ class ActionsControllerIntegrationTest extends BaseIntegrationTest {
             .statusCode(HttpStatus.OK.value())
             .extract()
             .body()
-            .as(ActionsListResponse.class);
+            .as(ActionsListResponseApiDto.class);
 
     assertThat(responseGetUser.getTotalCount()).isEqualTo(10);
     assertThat(responseGetUser2.getTotalCount()).isEqualTo(8);

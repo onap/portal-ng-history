@@ -31,9 +31,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.onap.portalng.history.entities.ActionsDao;
 import org.onap.portalng.history.exception.ProblemException;
-import org.onap.portalng.history.openapi.model.ActionResponse;
-import org.onap.portalng.history.openapi.model.ActionsListResponse;
-import org.onap.portalng.history.openapi.model.CreateActionRequest;
+import org.onap.portalng.history.openapi.model.ActionResponseApiDto;
+import org.onap.portalng.history.openapi.model.ActionsListResponseApiDto;
+import org.onap.portalng.history.openapi.model.CreateActionRequestApiDto;
 import org.onap.portalng.history.repository.ActionsRepository;
 import org.onap.portalng.history.util.Logger;
 import org.springframework.data.domain.PageRequest;
@@ -67,17 +67,11 @@ public class ActionsService {
    * @param showLastHours for which hours from the current time the actions should be retrieved.
    * @param saveInterval value will be part of the response action object. This value is set in the
    *     application properties. In the future this value can be provided from the client.
-   * @param xRequestId from the request header. Will be used in an error log
    * @return If successful object with an item list of action objects and an item with the list
    *     count, otherwise Mono error
    */
-  public Mono<ActionsListResponse> getActions(
-      String userId,
-      Integer page,
-      Integer pageSize,
-      Integer showLastHours,
-      Integer saveInterval,
-      String xRequestId) {
+  public Mono<ActionsListResponseApiDto> getActions(
+      String userId, Integer page, Integer pageSize, Integer showLastHours, Integer saveInterval) {
     Pageable paging =
         PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "actionCreatedAt"));
     var dateAfter = Date.from(ZonedDateTime.now().minusHours(showLastHours).toInstant());
@@ -86,11 +80,10 @@ public class ActionsService {
         .map(actionDao -> toActionResponse(actionDao, saveInterval))
         .collectList()
         .map(this::toActionsListResponse)
-        .switchIfEmpty(Mono.just(new ActionsListResponse().totalCount(0)))
+        .switchIfEmpty(Mono.just(new ActionsListResponseApiDto().totalCount(0)))
         .onErrorResume(
             ex -> {
-              Logger.errorLog(
-                  xRequestId, "Get actions cannot be executed for user with id ", userId);
+              Logger.errorLog("Get actions cannot be executed for user with id ", userId);
               return getError("Get actions can not be executed for user with id " + userId);
             });
   }
@@ -102,20 +95,15 @@ public class ActionsService {
    * @param createActionRequest the action object which should be stored
    * @param saveInterval value will be part of the response action object. This value is set in the
    *     application properties. In the future this value can be provided from the client.
-   * @param xRequestId from the request header. Will be used in an error log
    * @return If successful object with the stored action, otherwise Mono error
    */
-  public Mono<ActionResponse> createActions(
-      String userId,
-      CreateActionRequest createActionRequest,
-      Integer saveInterval,
-      String xRequestId) {
+  public Mono<ActionResponseApiDto> createActions(
+      String userId, CreateActionRequestApiDto createActionRequest, Integer saveInterval) {
     return Mono.just(repository.save(toActionsDao(userId, createActionRequest)))
         .map(action -> toActionResponse(action, saveInterval))
         .onErrorResume(
             ex -> {
-              Logger.errorLog(
-                  xRequestId, "Action for user can not be executed for user with id ", userId);
+              Logger.errorLog("Action for user can not be executed for user with id ", userId);
               return Mono.error(
                   ProblemException.builder()
                       .type(Problem.DEFAULT_TYPE)
@@ -136,15 +124,10 @@ public class ActionsService {
    * @param showLastHours for which hours from the current time the actions should be retrieved.
    * @param saveInterval value will be part of the response action object. This value is set in the
    *     application properties. * In the future this value can be provided from the client.
-   * @param xRequestId from the request header. Will be used in an error log
    * @return If successful list with action response object, otherwise Mono error
    */
-  public Mono<ActionsListResponse> listActions(
-      Integer page,
-      Integer pageSize,
-      Integer showLastHours,
-      Integer saveInterval,
-      String xRequestId) {
+  public Mono<ActionsListResponseApiDto> listActions(
+      Integer page, Integer pageSize, Integer showLastHours, Integer saveInterval) {
 
     var paging =
         PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "actionCreatedAt"));
@@ -157,7 +140,7 @@ public class ActionsService {
         .onErrorResume(
             ProblemException.class,
             ex -> {
-              Logger.errorLog(xRequestId, "List actions cannot be created", null);
+              Logger.errorLog("List actions cannot be created", null);
               return getError("List actions cannot be created");
             });
   }
@@ -167,19 +150,16 @@ public class ActionsService {
    *
    * @param userId the id of the user for which the action should be deleted
    * @param deleteAfterHours hours after the actions should be deleted
-   * @param xRequestId from the request header. Will be used in an error log
    * @return If successful empty Mono object, otherwise Mono error
    */
-  public Mono<Object> deleteUserActions(
-      String userId, Integer deleteAfterHours, String xRequestId) {
+  public Mono<Object> deleteUserActions(String userId, Integer deleteAfterHours) {
     var dateAfter = Date.from(ZonedDateTime.now().minusHours(deleteAfterHours).toInstant());
     return Mono.just(repository.deleteAllByUserIdAndActionCreatedAtIsBefore(userId, dateAfter))
         .map(resp -> new Object())
         .onErrorResume(
             ProblemException.class,
             ex -> {
-              Logger.errorLog(
-                  xRequestId, "Deletion of actions cannot be executed for user", userId);
+              Logger.errorLog("Deletion of actions cannot be executed for user", userId);
               return Mono.error(ex);
             });
   }
@@ -200,7 +180,7 @@ public class ActionsService {
         .onErrorResume(
             ProblemException.class,
             ex -> {
-              Logger.errorLog(null, "Delete all actions in cron job cannot be executed ", null);
+              Logger.errorLog("Delete all actions in cron job cannot be executed ", null);
               return getError("Delete all actions after hours cannot be executed");
             });
   }
@@ -211,9 +191,9 @@ public class ActionsService {
    *     application properties.
    * @return ActionsListResponse
    */
-  private ActionsListResponse toActionsListResponse(
-      java.util.List<ActionResponse> actionResponses) {
-    var actionsListResponse = new ActionsListResponse();
+  private ActionsListResponseApiDto toActionsListResponse(
+      java.util.List<ActionResponseApiDto> actionResponses) {
+    var actionsListResponse = new ActionsListResponseApiDto();
     actionsListResponse.setActionsList(actionResponses);
     actionsListResponse.setTotalCount(actionResponses.size());
     return actionsListResponse;
@@ -225,15 +205,15 @@ public class ActionsService {
    *     application properties.
    * @return action response object
    */
-  public ActionResponse toActionResponse(ActionsDao actionsDao, Integer saveInterval) {
-    return new ActionResponse()
+  public ActionResponseApiDto toActionResponse(ActionsDao actionsDao, Integer saveInterval) {
+    return new ActionResponseApiDto()
         .actionCreatedAt(
             actionsDao.getActionCreatedAt().toInstant().atOffset(ZoneOffset.ofHours(0)))
         .saveInterval(saveInterval)
         .action(actionsDao.getAction());
   }
 
-  private ActionsDao toActionsDao(String userId, CreateActionRequest createActionRequest) {
+  private ActionsDao toActionsDao(String userId, CreateActionRequestApiDto createActionRequest) {
     var actionsDao = new ActionsDao();
     actionsDao.setUserId(userId);
     actionsDao.setActionCreatedAt(
@@ -248,7 +228,7 @@ public class ActionsService {
    * @param message will be detail part of the problem object
    * @return Mono error with problem exception
    */
-  private Mono<ActionsListResponse> getError(String message) {
+  private Mono<ActionsListResponseApiDto> getError(String message) {
     return Mono.error(
         ProblemException.builder()
             .type(Problem.DEFAULT_TYPE)

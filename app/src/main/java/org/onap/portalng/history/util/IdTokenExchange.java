@@ -44,10 +44,9 @@ public final class IdTokenExchange {
   /**
    * Extract the identity header from the given {@link ServerWebExchange}.
    * @param exchange the ServerWebExchange that contains information about the incoming request
-   * @param xRequestId the id of the request to use in error log
    * @return the identity header in the form of <code>Bearer {@literal <Token>}<c/ode>
    */
-  private static Mono<String> extractIdentityHeader(ServerWebExchange exchange, String xRequestId) {
+  private static Mono<String> extractIdentityHeader(ServerWebExchange exchange) {
     return Mono.just(exchange.getRequest().getHeaders().getOrEmpty(X_AUTH_IDENTITY_HEADER))
         .map(headers -> headers.get(0))
         .onErrorResume(
@@ -68,11 +67,10 @@ public final class IdTokenExchange {
    * @see <a href="https://openid.net/specs/openid-connect-core-1_0.html#IDToken">OpenId Connect ID
    *     Token</a>
    * @param exchange the ServerWebExchange that contains information about the incoming request
-   * @param xRequestId the id of the request to use in error log
    * @return the identity token that contains user roles
    */
-  private static Mono<String> extractIdToken(ServerWebExchange exchange, String xRequestId) {
-    return extractIdentityHeader(exchange, xRequestId)
+  private static Mono<String> extractIdToken(ServerWebExchange exchange) {
+    return extractIdentityHeader(exchange)
         .map(identityHeader -> identityHeader.replace("Bearer ", ""));
   }
 
@@ -80,11 +78,10 @@ public final class IdTokenExchange {
    * Extract the <code>userId</code> from the given {@link ServerWebExchange}
    *
    * @param exchange the ServerWebExchange that contains information about the incoming request
-   * @param xRequestId the id of the request to use in error log
    * @return the id of the user
    */
-  public static Mono<String> extractUserId(ServerWebExchange exchange, String xRequestId) {
-    return extractIdToken(exchange, xRequestId).flatMap(idToken -> extractUserClaim(idToken));
+  public static Mono<String> extractUserId(ServerWebExchange exchange) {
+    return extractIdToken(exchange).flatMap(idToken -> extractUserClaim(idToken));
   }
 
   private static Mono<String> extractUserClaim(String idToken) {
@@ -103,15 +100,13 @@ public final class IdTokenExchange {
    *
    * @param userId from the path parameter of the REST call
    * @param exchange the ServerWebExchange that contains information about the incoming request
-   * @param xRequestId the id of the request to use in error log
    * @return <code>empty Mono</code> userId is the same as extracted from {@link ServerWebExchange}
    *     <code>Forbidden</code> userId is <bold>not</bold> the same as extracted from {@link
    *     ServerWebExchange}
    */
-  public static Mono<Void> validateUserId(
-      String userId, ServerWebExchange exchange, String xRequestId) {
+  public static Mono<Void> validateUserId(String userId, ServerWebExchange exchange) {
 
-    return extractUserId(exchange, xRequestId)
+    return extractUserId(exchange)
         .map(userSub -> userSub.equals(userId))
         .flatMap(
             match -> {
@@ -119,7 +114,6 @@ public final class IdTokenExchange {
                 return Mono.empty();
               } else {
                 Logger.errorLog(
-                    xRequestId,
                     "Requested " + userId + " did not match the JWT in the X-Auth-Identity header",
                     userId);
                 return Mono.error(

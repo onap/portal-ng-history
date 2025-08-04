@@ -34,32 +34,29 @@ public class Logger {
   /**
    * Write log to stdout for incoming request
    *
-   * @param xRequestId from the request header
    * @param methode http methode which is invoke
    * @param path which is called be the request
    */
-  public static void requestLog(String xRequestId, HttpMethod methode, URI path) {
-    log.info("History - request - X-Request-Id {} {} {}", xRequestId, methode, path);
+  public static void requestLog(HttpMethod methode, URI path) {
+    log.info("History - request - {} {}", methode, path);
   }
 
   /**
    * Write log to stdout for the outgoing response
    *
-   * @param xRequestId from the request header
    * @param code http status of the response
    */
-  public static void responseLog(String xRequestId, HttpStatusCode httpStatusCode) {
-    log.info("History - response - X-Request-Id {} {}", xRequestId, httpStatusCode);
+  public static void responseLog(HttpStatusCode httpStatusCode) {
+    log.info("History - response - {}", httpStatusCode);
   }
 
   /**
    * Write error log to stdout
    *
-   * @param xRequestId from the request header
    * @param msg message which should be written
    * @param id of the related object of the message
    */
-  public static void errorLog(String xRequestId, String msg, String id) {
-    log.info("History - error - X-Request-Id {} {} {} not found", xRequestId, msg, id);
+  public static void errorLog(String msg, String id) {
+    log.info("History - error - {} {} not found", msg, id);
   }
 }

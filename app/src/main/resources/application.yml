@@ -60,7 +60,7 @@ management:
       endpoint: http://${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
 
 logger:
-  traceIdHeaderName: "X-Request-Id"
+  traceIdHeaderName: ${TRACE_ID_HEADER_NAME}
   enabled: true
   excludePaths:
     - "/actuator/**"
