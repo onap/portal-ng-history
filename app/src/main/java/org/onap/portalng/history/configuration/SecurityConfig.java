@@ -21,6 +21,8 @@
 
 package org.onap.portalng.history.configuration;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,11 +38,10 @@ public class SecurityConfig {
 
   @Bean
   public SecurityWebFilterChain springSecurityWebFilterChain(ServerHttpSecurity http) {
-    return http.httpBasic(
-            basic ->
-                basic
-                    .disable()
-                    .formLogin(login -> login.disable().csrf(csrf -> csrf.disable().cors())))
+    return http.httpBasic(basic -> basic.disable())
+        .formLogin(login -> login.disable())
+        .csrf(csrf -> csrf.disable())
+        .cors(withDefaults())
         .authorizeExchange(
             exchange ->
                 exchange
@@ -48,7 +49,7 @@ public class SecurityConfig {
                     .permitAll()
                     .anyExchange()
                     .authenticated())
-        .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt)
+        .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
         .build();
   }
 }

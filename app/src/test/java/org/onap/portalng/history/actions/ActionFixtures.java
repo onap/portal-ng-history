@@ -27,15 +27,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.onap.portalng.history.entities.ActionsDao;
-import org.onap.portalng.history.openapi.model.CreateActionRequest;
+import org.onap.portalng.history.openapi.model.CreateActionRequestApiDto;
 
 public class ActionFixtures {
 
   private static ObjectMapper objectMapper = new ObjectMapper();
 
-  public static List<CreateActionRequest> createActionRequestList(
+  public static List<CreateActionRequestApiDto> createActionRequestList(
       Integer numberOfActions, String userId, OffsetDateTime createdAt) {
-    List<CreateActionRequest> createActionRequestList = new ArrayList<>();
+    List<CreateActionRequestApiDto> createActionRequestList = new ArrayList<>();
     for (Integer i = 1; i <= numberOfActions; i++) {
       createActionRequestList.add(
           generateActionRequest(
@@ -53,9 +53,9 @@ public class ActionFixtures {
     return createActionRequestList;
   }
 
-  public static List<CreateActionRequest> createActionRequestListHourOffsetOnly(
+  public static List<CreateActionRequestApiDto> createActionRequestListHourOffsetOnly(
       Integer numberOfActions, String userId, OffsetDateTime createdAt) {
-    List<CreateActionRequest> createActionRequestList = new ArrayList<>();
+    List<CreateActionRequestApiDto> createActionRequestList = new ArrayList<>();
     for (Integer i = 1; i <= numberOfActions; i++) {
       createActionRequestList.add(
           generateActionRequest(
@@ -73,7 +73,7 @@ public class ActionFixtures {
     return createActionRequestList;
   }
 
-  public static CreateActionRequest generateActionRequest(
+  public static CreateActionRequestApiDto generateActionRequest(
       String type,
       String action,
       String message,
@@ -91,7 +91,7 @@ public class ActionFixtures {
     actionDto.setDownStreamSystem(downStreamSystem);
     actionDto.setDownStreamId(id);
 
-    return new CreateActionRequest()
+    return new CreateActionRequestApiDto()
         .userId(userId)
         .action(actionDto)
         .actionCreatedAt(

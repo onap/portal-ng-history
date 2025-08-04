@@ -1,18 +1,21 @@
 openapi: 3.0.2
 info:
-  title: History API
-  version: '1.0'
+  title: Portal NG History
+  version: '1.1'
   description: API to provide actions for history
+  contact:
+    name: ONAP
 servers:
-  - url: 'http://localhost:9002'
+  - url: http://localhost:9002
 tags:
   - name: actions
 paths:
   '/v1/actions/{userId}':
     parameters:
       - $ref: '#/components/parameters/userIdPathParam'
-      - $ref: '#/components/parameters/xRequestIdHeader'
     get:
+      security:
+        - bearerAuth: []
       summary: Retrieve all actions for a specific user
       responses:
         '200':
@@ -45,6 +48,8 @@ paths:
       tags:
         - actions
     post:
+      security:
+        - bearerAuth: []
       summary: Create an action for a given user
       operationId: createAction
       responses:
@@ -74,6 +79,8 @@ paths:
       tags:
         - actions
     delete:
+      security:
+        - bearerAuth: []
       summary: Delete user actions after given time
       operationId: deleteActions
       parameters:
@@ -106,6 +113,8 @@ paths:
       description: Delete user actions after given time
   /v1/actions:
     get:
+      security:
+        - bearerAuth: []
       summary: Retrieve all actions from the portal with an optional timeframe
       responses:
         '200':
@@ -126,7 +135,6 @@ paths:
           $ref: '#/components/responses/BadGateway'
       operationId: listActions
       parameters:
-        - $ref: '#/components/parameters/xRequestIdHeader'
         - $ref: '#/components/parameters/pageQueryParam'
         - $ref: '#/components/parameters/pageSizeQueryParam'
         - schema:
@@ -140,13 +148,6 @@ paths:
         - actions
 components:
   parameters:
-    xRequestIdHeader:
-      name: X-Request-Id
-      in: header
-      description: The unique identifier of the request
-      required: true
-      schema:
-        type: string
     pageQueryParam:
       name: page
       in: query
@@ -266,85 +267,50 @@ components:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
     Unauthorized:
       description: '401: Unauthorized'
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
     Forbidden:
       description: '403: Forbidden'
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
     NotFound:
       description: '404: Not Found'
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
     NotAllowed:
       description: '405: Method Not Allowed'
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
     Conflict:
       description: '409: Conflict'
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
     InternalServerError:
       description: Internal Server Error
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
     BadGateway:
       description: Bad Gateway
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/Problem'
-      headers:
-        X-Request-Id:
-          schema:
-            type: string
-          description: A <uuid4> in each response
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

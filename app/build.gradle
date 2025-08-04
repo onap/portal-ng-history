@@ -31,7 +31,7 @@ configurations {
 
 ext {
   problemVersion = '0.27.1'
-  swaggerAnnotationsVersion = '2.2.34'
+  swaggerAnnotationsVersion = '2.2.35'
   problemSpringVersion = '0.29.1'
   logbackVersion = '1.5.18'
   logstashLogbackVersion = '8.1'
@@ -69,7 +69,7 @@ dependencies {
   implementation 'io.micrometer:micrometer-registry-prometheus'
 
   compileOnly 'org.projectlombok:lombok'
-  compileOnly "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
+  compileOnly "io.swagger.core.v3:swagger-annotations-jakarta:$swaggerAnnotationsVersion"
 
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -83,7 +83,7 @@ dependencies {
   testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock:$springCloudWiremockVersion"
   testImplementation 'org.testcontainers:postgresql'
   testCompileOnly 'org.projectlombok:lombok'
-  testCompileOnly "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
+  testCompileOnly "io.swagger.core.v3:swagger-annotations-jakarta:$swaggerAnnotationsVersion"
   testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
