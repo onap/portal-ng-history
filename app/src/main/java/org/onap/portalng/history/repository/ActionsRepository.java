@@ -21,12 +21,17 @@
 
 package org.onap.portalng.history.repository;
 
+import jakarta.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import org.onap.portalng.history.entities.ActionsDao;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ActionsRepository extends JpaRepository<ActionsDao, String> {
 
   List<ActionsDao> findAllByActionCreatedAtAfter(Pageable pageable, Date actionCreatedAt);
@@ -37,4 +42,9 @@ public interface ActionsRepository extends JpaRepository<ActionsDao, String> {
   long deleteAllByUserIdAndActionCreatedAtIsBefore(String userId, Date actionCreatedAt);
 
   long deleteAllByActionCreatedAtIsBefore(Date actionCreatedAt);
+
+  @Modifying
+  @Transactional
+  @Query(value = "TRUNCATE TABLE actions", nativeQuery = true)
+  void truncateTable();
 }
