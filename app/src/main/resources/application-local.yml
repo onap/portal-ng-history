@@ -1,42 +1,20 @@
-server:
-  port: 9002
-  address: 0.0.0.0
-
 spring:
-  jackson:
-    serialization:
-      # needed for serializing objects of type object
-      FAIL_ON_EMPTY_BEANS: false
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8080/realms/ONAP/protocol/openid-connect/certs #Keycloak Endpoint
   datasource:
-    url: jdbc:postgresql://localhost:5441/history
+    url: jdbc:postgresql://localhost:5432/history
     username: postgres
     password: postgres
   jpa:
     show-sql: true
 
-history:
-  save-interval: 72
-  delete-interval: 0 * * * * *
-
 management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  info:
-    build:
-      enabled: true
-    env:
-      enabled: true
-    git:
-      enabled: true
-    java:
-      enabled: true
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
 
 logger:
   traceIdHeaderName: x-b3-traceid
