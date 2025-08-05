@@ -32,10 +32,8 @@ configurations {
 ext {
   problemVersion = '0.27.1'
   swaggerAnnotationsVersion = '2.2.35'
-  problemSpringVersion = '0.29.1'
   logbackVersion = '1.5.18'
   logstashLogbackVersion = '8.1'
-  springCloudWiremockVersion = '4.3.0'
 }
 
 repositories {
@@ -55,7 +53,6 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   implementation "org.zalando:problem:$problemVersion"
   implementation "org.zalando:jackson-datatype-problem:$problemVersion"
-  implementation "org.zalando:problem-spring-webflux:$problemSpringVersion"
   implementation "ch.qos.logback:logback-classic:$logbackVersion"
   implementation "ch.qos.logback:logback-core:$logbackVersion"
   implementation "net.logstash.logback:logstash-logback-encoder:$logstashLogbackVersion"
@@ -79,8 +76,6 @@ dependencies {
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'io.projectreactor:reactor-test'
-  testImplementation 'io.rest-assured:rest-assured'
-  testImplementation "org.springframework.cloud:spring-cloud-contract-wiremock:$springCloudWiremockVersion"
   testImplementation 'org.testcontainers:postgresql'
   testCompileOnly 'org.projectlombok:lombok'
   testCompileOnly "io.swagger.core.v3:swagger-annotations-jakarta:$swaggerAnnotationsVersion"
