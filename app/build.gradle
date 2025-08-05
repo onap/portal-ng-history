@@ -32,8 +32,6 @@ configurations {
 ext {
   problemVersion = '0.27.1'
   swaggerAnnotationsVersion = '2.2.35'
-  logbackVersion = '1.5.18'
-  logstashLogbackVersion = '8.1'
 }
 
 repositories {
@@ -53,9 +51,6 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   implementation "org.zalando:problem:$problemVersion"
   implementation "org.zalando:jackson-datatype-problem:$problemVersion"
-  implementation "ch.qos.logback:logback-classic:$logbackVersion"
-  implementation "ch.qos.logback:logback-core:$logbackVersion"
-  implementation "net.logstash.logback:logstash-logback-encoder:$logstashLogbackVersion"
 
   implementation "org.liquibase:liquibase-core"
   implementation 'org.postgresql:postgresql'

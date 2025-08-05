@@ -3,17 +3,20 @@ server:
   address: 0.0.0.0
 
 spring:
+  application:
+    name: history-test
   jackson:
     serialization:
       # needed for serializing objects of type object
-      FAIL_ON_EMPTY_BEANS: false
+      fail-on-empty-beans: false
   security:
     oauth2:
       resourceserver:
         jwt:
+          # this value needs to be set for SpringBoot Context, but the tests us mockJwt so it doesn't need to be a valid address
           jwk-set-uri: http://localhost
   datasource:
-    url: jdbc:tc:postgresql:16:///history
+    url: jdbc:tc:postgresql:///history
     username: postgres
     password: postgres
   jpa:
@@ -32,14 +35,7 @@ spring:
   liquibase:
     change-log: "classpath:/db/changelog.xml"
 
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 5.0.15
-
 history:
-  realm: ONAP
   save-interval: 72
   delete-interval: '0 0 0 1 1 *'
 
@@ -57,6 +53,8 @@ management:
       enabled: true
     java:
       enabled: true
+  tracing:
+    enabled: false
 
 logger:
   traceIdHeaderName: x-b3-traceid
@@ -64,3 +62,9 @@ logger:
   excludePaths:
     - "/actuator/**"
 
+logging:
+  structured:
+    format:
+      console: logstash
+  level:
+    root: info

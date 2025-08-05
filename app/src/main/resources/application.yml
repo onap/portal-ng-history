@@ -8,7 +8,7 @@ spring:
   jackson:
     serialization:
       # needed for serializing objects of type object
-      FAIL_ON_EMPTY_BEANS: false
+      fail-on-empty-beans: false
   security:
     oauth2:
       resourceserver:
@@ -64,3 +64,10 @@ logger:
   enabled: true
   excludePaths:
     - "/actuator/**"
+
+logging:
+  structured:
+    format:
+      console: logstash
+  level:
+    root: info
