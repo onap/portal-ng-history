@@ -18,6 +18,24 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4d382c8_c603c3b9",
+        "filename": "app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 8472
+      },
+      "writtenOn": "2025-08-07T06:30:59Z",
+      "side": 1,
+      "message": "Yes it is necassary, because otherwise the test build will issue warnings about unknown annotations.",
+      "parentUuid": "775f19bd_f3c03443",
+      "revId": "d8bf180987b62476a0777c7d5ca9d4a4c484c5d9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fafcd072_227e5b1e",
@@ -35,6 +53,24 @@
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f24494d_0cbd79d2",
+        "filename": "app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 8472
+      },
+      "writtenOn": "2025-08-07T06:30:59Z",
+      "side": 1,
+      "message": "Yes it will be used in https://gerrit.onap.org/r/c/portal-ng/history/+/141646/1",
+      "parentUuid": "fafcd072_227e5b1e",
+      "revId": "d8bf180987b62476a0777c7d5ca9d4a4c484c5d9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9b20d630_ef2b6244",
@@ -48,6 +84,24 @@
       "writtenOn": "2025-08-07T06:13:21Z",
       "side": 1,
       "message": "Can you check if it is possible to either not specify a version here, or alternatively use some `$springBootVersion` placeholder?",
+      "revId": "d8bf180987b62476a0777c7d5ca9d4a4c484c5d9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3cba4e31_2e9fe5d7",
+        "filename": "openapi/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 8472
+      },
+      "writtenOn": "2025-08-07T06:30:59Z",
+      "side": 1,
+      "message": "Ideally I want to have all dependency versions in one place. I\u0027m currently looking at using [version catalogs](https://docs.gradle.org/current/userguide/version_catalogs.html), but I would do this in a seperate change.",
+      "parentUuid": "9b20d630_ef2b6244",
       "revId": "d8bf180987b62476a0777c7d5ca9d4a4c484c5d9",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
     }
