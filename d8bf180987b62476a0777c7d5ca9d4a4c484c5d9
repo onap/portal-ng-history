@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fafcd072_227e5b1e",
+        "filename": "app/build.gradle",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2025-08-07T06:16:13Z",
+      "side": 1,
+      "message": "Is this intentionally commented out? If so, shall it be removed (or will it be modified in one of the other CR\u0027s anyways)?",
+      "revId": "d8bf180987b62476a0777c7d5ca9d4a4c484c5d9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9b20d630_ef2b6244",
         "filename": "openapi/build.gradle",
         "patchSetId": 2
