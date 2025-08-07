@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd1f8c4b_3dd8e823",
+        "filename": "app/src/test/java/org/onap/portalng/history/ActionsControllerIntegrationTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2025-08-07T06:28:47Z",
+      "side": 1,
+      "message": "Can you add a comment in the code here that briefly explains what `truncateTable` does (and perhaps why it is necessary)?",
+      "revId": "24168445f0cf0bec5e3e96fc19d5057d205f7530",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8401936b_fa2b616d",
+        "filename": "app/src/test/java/org/onap/portalng/history/ActionsControllerIntegrationTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 7849
+      },
+      "writtenOn": "2025-08-07T06:28:47Z",
+      "side": 1,
+      "message": "Can you add an assertion here that also asserts the size of the list as null (thus making sure that the list is not `null`)?",
+      "revId": "24168445f0cf0bec5e3e96fc19d5057d205f7530",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a"
+    }
+  ]
+}
