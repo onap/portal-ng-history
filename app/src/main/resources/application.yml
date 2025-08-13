@@ -57,7 +57,7 @@ management:
       probability: 1.0 # sample every request
   zipkin:
     tracing:
-      endpoint: http://${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
+      endpoint: ${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
 
 logger:
   traceIdHeaderName: ${TRACE_ID_HEADER_NAME}
