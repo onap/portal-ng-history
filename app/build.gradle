@@ -72,6 +72,7 @@ dependencies {
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'io.projectreactor:reactor-test'
   testImplementation 'org.testcontainers:postgresql'
+  testImplementation 'org.wiremock:wiremock-standalone:3.3.1'
   testCompileOnly 'org.projectlombok:lombok'
   testCompileOnly "io.swagger.core.v3:swagger-annotations-jakarta:$swaggerAnnotationsVersion"
   testAnnotationProcessor 'org.projectlombok:lombok'
