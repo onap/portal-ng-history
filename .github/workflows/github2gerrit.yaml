@@ -1,0 +1,31 @@
+name: github2gerrit
+
+on:
+  pull_request_target:
+    types: [opened, reopened, edited, synchronize]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  submit-to-gerrit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Submit PR to Gerrit
+        id: g2g
+        uses: lfreleng-actions/github2gerrit-action@main
+        with:
+          SUBMIT_SINGLE_COMMITS: "false"
+          USE_PR_AS_COMMIT: "false"
+          FETCH_DEPTH: "10"
+          GERRIT_KNOWN_HOSTS: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          GERRIT_SSH_PRIVKEY_G2G: ${{ secrets.GERRIT_SSH_PRIVKEY_G2G }}
+          GERRIT_SSH_USER_G2G: ${{ vars.GERRIT_SSH_USER_G2G }}
+          GERRIT_SSH_USER_G2G_EMAIL: ${{ vars.GERRIT_SSH_USER_G2G_EMAIL }}
+          ORGANIZATION: ${{ github.repository_owner }}
+          REVIEWERS_EMAIL: ""
+          ISSUE_ID: ""  # Optional: adds 'Issue-ID: ...' trailer to the commit message
+          ISSUE_ID_LOOKUP_JSON: ${{ vars.ISSUE_ID_LOOKUP_JSON }}  # Optional: JSON lookup table for automatic Issue-ID resolution
