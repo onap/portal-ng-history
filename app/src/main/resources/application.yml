@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: history
+    name: ${APPLICATION_NAME:portal-ng-history}
   jackson:
     serialization:
       # needed for serializing objects of type object
