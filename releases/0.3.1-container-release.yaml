@@ -1,0 +1,7 @@
+distribution_type: container
+container_release_tag: 0.3.1
+project: portal-ng/history
+ref: 5bc30a36764a1420d1f521969e29d95561670abe
+containers:
+    - name: portal-ng/history
+      version: latest
