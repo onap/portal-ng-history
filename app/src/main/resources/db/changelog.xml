@@ -9,4 +9,5 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
         <include file="changelog/v001_create_schema.xml" relativeToChangelogFile="true"/>
+        <include file="changelog/v002_add_indexes.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

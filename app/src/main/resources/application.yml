@@ -21,6 +21,11 @@ spring:
     url: jdbc:postgresql://${HISTORY_DB_HOST}:${HISTORY_DB_PORT}/${HISTORY_DB}
     username: ${HISTORY_DB_USERNAME}
     password: ${HISTORY_DB_PASSWORD}
+    hikari:
+      # Explicit, env-overridable pool sizing. Sized to complement the boundedElastic
+      # scheduler that runs the blocking JPA calls off the Netty event loop.
+      maximum-pool-size: ${HISTORY_DB_POOL_MAX_SIZE:10}
+      minimum-idle: ${HISTORY_DB_POOL_MIN_IDLE:2}
   jpa:
     database: postgresql
     properties:

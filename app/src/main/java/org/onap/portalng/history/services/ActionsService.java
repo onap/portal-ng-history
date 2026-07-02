@@ -46,6 +46,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Transactional
 @RequiredArgsConstructor
@@ -75,8 +76,10 @@ public class ActionsService {
     Pageable paging =
         PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "actionCreatedAt"));
     var dateAfter = Date.from(ZonedDateTime.now().minusHours(showLastHours).toInstant());
-    return Flux.fromIterable(
-            repository.findAllByUserIdAndActionCreatedAtAfter(paging, userId, dateAfter))
+    return Mono.fromCallable(
+            () -> repository.findAllByUserIdAndActionCreatedAtAfter(paging, userId, dateAfter))
+        .subscribeOn(Schedulers.boundedElastic())
+        .flatMapMany(Flux::fromIterable)
         .map(actionDao -> toActionResponse(actionDao, saveInterval))
         .collectList()
         .map(this::toActionsListResponse)
@@ -99,7 +102,8 @@ public class ActionsService {
    */
   public Mono<ActionResponseApiDto> createActions(
       String userId, CreateActionRequestApiDto createActionRequest, Integer saveInterval) {
-    return Mono.just(repository.save(toActionsDao(userId, createActionRequest)))
+    return Mono.fromCallable(() -> repository.save(toActionsDao(userId, createActionRequest)))
+        .subscribeOn(Schedulers.boundedElastic())
         .map(action -> toActionResponse(action, saveInterval))
         .onErrorResume(
             ex -> {
@@ -133,7 +137,9 @@ public class ActionsService {
         PageRequest.of(page - 1, pageSize, Sort.by(Sort.Direction.DESC, "actionCreatedAt"));
     var dateAfter = Date.from(ZonedDateTime.now().minusHours(showLastHours).toInstant());
 
-    return Flux.fromIterable(repository.findAllByActionCreatedAtAfter(paging, dateAfter))
+    return Mono.fromCallable(() -> repository.findAllByActionCreatedAtAfter(paging, dateAfter))
+        .subscribeOn(Schedulers.boundedElastic())
+        .flatMapMany(Flux::fromIterable)
         .map(actionDto -> toActionResponse(actionDto, saveInterval))
         .collectList()
         .map(this::toActionsListResponse)
@@ -154,7 +160,9 @@ public class ActionsService {
    */
   public Mono<Object> deleteUserActions(String userId, Integer deleteAfterHours) {
     var dateAfter = Date.from(ZonedDateTime.now().minusHours(deleteAfterHours).toInstant());
-    return Mono.just(repository.deleteAllByUserIdAndActionCreatedAtIsBefore(userId, dateAfter))
+    return Mono.fromCallable(
+            () -> repository.deleteAllByUserIdAndActionCreatedAtIsBefore(userId, dateAfter))
+        .subscribeOn(Schedulers.boundedElastic())
         .map(resp -> new Object())
         .onErrorResume(
             ProblemException.class,
@@ -175,7 +183,8 @@ public class ActionsService {
     var dateAfter =
         Date.from(
             LocalDateTime.now().minusHours(deleteAfterHours).atZone(ZoneId.of("CET")).toInstant());
-    return Mono.just(repository.deleteAllByActionCreatedAtIsBefore(dateAfter))
+    return Mono.fromCallable(() -> repository.deleteAllByActionCreatedAtIsBefore(dateAfter))
+        .subscribeOn(Schedulers.boundedElastic())
         .map(resp -> new Object())
         .onErrorResume(
             ProblemException.class,

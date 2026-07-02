@@ -39,8 +39,18 @@ public interface ActionsRepository extends JpaRepository<ActionsDao, String> {
   List<ActionsDao> findAllByUserIdAndActionCreatedAtAfter(
       Pageable pageable, String userId, Date actionCreatedAt);
 
+  // Bulk deletes issued as a single DELETE statement in their own transaction. This avoids the
+  // select-then-remove-each behaviour of Spring Data derived deletes (a performance win) and lets
+  // the service offload the call to Schedulers.boundedElastic() without an ambient transaction.
+  @Modifying
+  @Transactional
+  @Query(
+      "DELETE FROM ActionsDao a WHERE a.userId = :userId AND a.actionCreatedAt < :actionCreatedAt")
   long deleteAllByUserIdAndActionCreatedAtIsBefore(String userId, Date actionCreatedAt);
 
+  @Modifying
+  @Transactional
+  @Query("DELETE FROM ActionsDao a WHERE a.actionCreatedAt < :actionCreatedAt")
   long deleteAllByActionCreatedAtIsBefore(Date actionCreatedAt);
 
   @Modifying
