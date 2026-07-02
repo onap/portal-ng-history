@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) ${year}. Deutsche Telekom AG
+ * Copyright (c) $YEAR. Deutsche Telekom AG
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,3 +18,4 @@
  *
  *
  */
+

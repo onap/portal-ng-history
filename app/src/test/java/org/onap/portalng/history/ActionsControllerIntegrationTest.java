@@ -44,6 +44,7 @@ import org.onap.portalng.history.repository.ActionsRepository;
 import org.onap.portalng.history.services.ActionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
@@ -51,6 +52,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 class ActionsControllerIntegrationTest {
   @Autowired private WebTestClient webTestClient;
   @Autowired private ObjectMapper objectMapper;

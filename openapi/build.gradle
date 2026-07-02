@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
   compileOnly 'io.swagger.core.v3:swagger-annotations-jakarta:2.2.51'
-  compileOnly 'org.springframework.boot:spring-boot-starter-webflux:3.5.15'
+  compileOnly 'org.springframework.boot:spring-boot-starter-webflux:4.0.7'
   compileOnly 'jakarta.validation:jakarta.validation-api:3.1.1'
 }
 

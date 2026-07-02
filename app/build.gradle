@@ -4,11 +4,15 @@ plugins {
   id 'io.spring.dependency-management'
   id 'org.springframework.boot'
   id 'jacoco'
-  id 'com.github.hierynomus.license'
   id 'com.gorylenko.gradle-git-properties'
   id 'com.diffplug.spotless'
 }
-apply from: "${rootDir}/gradle/verify-licenses.gradle"
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(25)
+  }
+}
 
 def appVersion = getAppVersion()
 
@@ -52,12 +56,24 @@ dependencies {
   implementation "org.zalando:problem:$problemVersion"
   implementation "org.zalando:jackson-datatype-problem:$problemVersion"
 
+  // Boot 4 defaults to Jackson 3; this bridge keeps the Jackson 2 API on the classpath
+  // because Zalando jackson-datatype-problem (ProblemModule) has no Jackson 3 release.
+  implementation 'org.springframework.boot:spring-boot-jackson2'
+
+  // Boot 4 modularized Liquibase auto-config out of the core starter.
+  implementation 'org.springframework.boot:spring-boot-starter-liquibase'
   implementation "org.liquibase:liquibase-core"
   implementation 'org.postgresql:postgresql'
 
   implementation "io.micrometer:micrometer-tracing"
   implementation "io.micrometer:micrometer-tracing-bridge-otel"
   implementation "io.opentelemetry:opentelemetry-exporter-zipkin"
+  // Boot 4 moved tracing/OTel/Zipkin auto-config out of actuator-autoconfigure into opt-in
+  // modules that are not pulled transitively. These wire micrometer-tracing -> OTel SDK ->
+  // ZipkinSpanExporter; spring-boot-zipkin provides the HTTP sender + endpoint property.
+  implementation 'org.springframework.boot:spring-boot-zipkin'
+  implementation 'org.springframework.boot:spring-boot-micrometer-tracing'
+  implementation 'org.springframework.boot:spring-boot-micrometer-tracing-opentelemetry'
   implementation 'io.micrometer:micrometer-registry-prometheus'
 
   compileOnly 'org.projectlombok:lombok'
@@ -69,9 +85,11 @@ dependencies {
   annotationProcessor 'org.projectlombok:lombok'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  // Boot 4 moved WebTestClient auto-config out of starter-test into its own module.
+  testImplementation 'org.springframework.boot:spring-boot-webtestclient'
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'io.projectreactor:reactor-test'
-  testImplementation 'org.testcontainers:postgresql'
+  testImplementation 'org.testcontainers:testcontainers-postgresql'
   testImplementation 'org.wiremock:wiremock-standalone:3.13.2'
   testCompileOnly 'org.projectlombok:lombok'
   testCompileOnly "io.swagger.core.v3:swagger-annotations-jakarta:$swaggerAnnotationsVersion"
@@ -94,17 +112,6 @@ application {
   mainClass = 'org.onap.portalng.history.HistoryApplication'
 }
 
-downloadLicenses {
-  dependencyConfiguration = 'implementation'
-  includeProjectDependencies = false
-}
-
-license {
-  ignoreFailures = true
-  header = project.file('LICENSE_HEADER')
-  includes(["**/*.java"])
-  ext.year = Calendar.getInstance().get(Calendar.YEAR)
-}
 configurations.implementation.setCanBeResolved(true)
 
 def String getAppVersion() {
@@ -130,5 +137,8 @@ gitProperties {
 spotless {
   java {
     googleJavaFormat()
+    // Apache 2.0 header enforcement (replaces the removed hierynomus license plugin,
+    // which is incompatible with the Spring 7 buildscript classpath under Boot 4).
+    licenseHeaderFile("${projectDir}/spotless.license.java")
   }
 }

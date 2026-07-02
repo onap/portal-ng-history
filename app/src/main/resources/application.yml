@@ -6,6 +6,9 @@ spring:
   application:
     name: ${APPLICATION_NAME:portal-ng-history}
   jackson:
+    # Boot 4 defaults to Jackson 3; keep Boot-3 Jackson 2 conventions for the
+    # Jackson2ObjectMapperBuilder-built mapper used with Zalando ProblemModule.
+    use-jackson2-defaults: true
     serialization:
       # needed for serializing objects of type object
       fail-on-empty-beans: false
@@ -52,12 +55,12 @@ management:
     java:
       enabled: true
   tracing:
-    enabled: true
+    export:
+      enabled: true
+      zipkin:
+        endpoint: ${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
     sampling:
       probability: 1.0 # sample every request
-  zipkin:
-    tracing:
-      endpoint: ${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
 
 logger:
   traceIdHeaderName: ${TRACE_ID_HEADER_NAME}

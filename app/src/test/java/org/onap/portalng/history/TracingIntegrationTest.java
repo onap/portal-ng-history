@@ -65,10 +65,11 @@ class TracingIntegrationTest {
   @DynamicPropertySource
   static void configureProperties(DynamicPropertyRegistry registry) {
     registry.add("management.tracing.enabled", () -> "true");
+    registry.add("management.tracing.export.enabled", () -> "true");
     registry.add("management.tracing.sampling.probability", () -> "1.0");
-    registry.add("management.tracing.opentelemetry.export.schedule-delay", () -> "200");
+    registry.add("management.opentelemetry.tracing.export.schedule-delay", () -> "200ms");
     registry.add(
-        "management.zipkin.tracing.endpoint",
+        "management.tracing.export.zipkin.endpoint",
         () -> "http://localhost:" + wireMockServer.port() + "/api/v2/spans");
   }
 
