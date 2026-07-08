@@ -1,9 +1,9 @@
-FROM eclipse-temurin:25 as builder
+FROM nexus3.onap.org:10001/eclipse-temurin:25 as builder
 COPY . ./history
 WORKDIR /history
 RUN ./gradlew assemble
 
-FROM eclipse-temurin:25-jre-alpine
+FROM nexus3.onap.org:10001/eclipse-temurin:25-jre-alpine
 USER nobody
 ARG JAR_FILE=/history/app/build/libs/app.jar
 COPY --from=builder ${JAR_FILE} app.jar
