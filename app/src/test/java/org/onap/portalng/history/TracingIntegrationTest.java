@@ -100,4 +100,16 @@ class TracingIntegrationTest {
         moreThanOrExactly(1),
         postRequestedFor(urlEqualTo("/api/v2/spans")).withRequestBody(containing("[")));
   }
+
+  @Test
+  void testThatActuatorTracesAreNotExported() throws InterruptedException {
+    // Actuator traffic (liveness/readiness probes, metric scrapes) must be filtered out by the
+    // ObservationPredicate, so no span referencing the actuator path is ever shipped to Zipkin.
+    webTestClient.get().uri("/actuator/health").exchange().expectStatus().isOk();
+
+    Thread.sleep(1000);
+
+    wireMockServer.verify(
+        0, postRequestedFor(urlEqualTo("/api/v2/spans")).withRequestBody(containing("actuator")));
+  }
 }
