@@ -1,5 +1,6 @@
 ---
 name: Gerrit Composed Gradle Verify CLM
+
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
@@ -40,21 +41,31 @@ on:
         description: "Gerrit refspec of change"
         required: true
         type: string
+
 concurrency:
   # yamllint disable-line rule:line-length
   group: composed-gradle-verify-clm${{ github.workflow }}-${{ github.event.inputs.GERRIT_CHANGE_ID || github.run_id }}
   cancel-in-progress: true
+
+# Default to no permissions; each job grants only what it needs.
+permissions: {}
+
 jobs:
   prepare:
+    name: Clear Gerrit vote
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # gerrit-review-action votes over SSH only
     steps:
       - name: Clear votes
         # yamllint disable-line rule:line-length
-        uses: lfit/gerrit-review-action@v0.8
+        uses: lfreleng-actions/gerrit-review-action@a1c036a59b94c8ab89de26d378f6a28cc7378b13  # v1.1.2
         with:
           host: ${{ vars.GERRIT_SERVER }}
           username: ${{ vars.GERRIT_SSH_USER }}
-          key: ${{ secrets.GERRIT_SSH_PRIVKEY }}
+          # Review-only Gerrit SSH voting key; not gated by an Environment
+          # yamllint disable-line rule:line-length
+          key: ${{ secrets.GERRIT_SSH_PRIVKEY }}  # zizmor: ignore[secrets-outside-env]
           known_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
           gerrit-change-number: ${{ inputs.GERRIT_CHANGE_NUMBER }}
           gerrit-patchset-number: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
@@ -62,10 +73,14 @@ jobs:
           comment-only: true
       - name: Allow replication
         run: sleep 10s
+
   gradle-verify-clm:
+    name: Gradle build and Nexus IQ scan
     needs: prepare
+    permissions:
+      contents: read  # composed-gradle-nexus-iq only checks out code
     # yamllint disable-line rule:line-length
-    uses: lfit/releng-reusable-workflows/.github/workflows/composed-gradle-nexus-iq.yaml@main
+    uses: lfit/releng-reusable-workflows/.github/workflows/composed-gradle-nexus-iq.yaml@5fa62e396473e823e2bb0f45b744e94c4f842faa  # v0.7.4
     with:
       GERRIT_BRANCH: ${{ inputs.GERRIT_BRANCH }}
       GERRIT_CHANGE_ID: ${{ inputs.GERRIT_CHANGE_ID }}
@@ -78,22 +93,29 @@ jobs:
       GERRIT_REFSPEC: ${{ inputs.GERRIT_REFSPEC }}
     secrets:
       NEXUS_IQ_PASSWORD: ${{ secrets.NEXUS_IQ_PASSWORD }}
+
   vote:
+    name: Report Gerrit vote
     if: ${{ always() }}
+    permissions:
+      contents: read  # gerrit-review-action votes over SSH only
+      actions: read  # workflow-conclusion queries the Actions API
     # yamllint enable rule:line-length
     needs: [prepare, gradle-verify-clm]
     runs-on: ubuntu-latest
     steps:
       - name: Get conclusion
         # yamllint disable-line rule:line-length
-        uses: technote-space/workflow-conclusion-action@v3.0.3
+        uses: im-open/workflow-conclusion@8eac7f17381a6917bc04fec3e2c92e70ebc37526  # v3.0.0
       - name: Set vote
         # yamllint disable-line rule:line-length
-        uses: lfit/gerrit-review-action@v0.8
+        uses: lfreleng-actions/gerrit-review-action@a1c036a59b94c8ab89de26d378f6a28cc7378b13  # v1.1.2
         with:
           host: ${{ vars.GERRIT_SERVER }}
           username: ${{ vars.GERRIT_SSH_USER }}
-          key: ${{ secrets.GERRIT_SSH_PRIVKEY }}
+          # Review-only Gerrit SSH voting key; not gated by an Environment
+          # yamllint disable-line rule:line-length
+          key: ${{ secrets.GERRIT_SSH_PRIVKEY }}  # zizmor: ignore[secrets-outside-env]
           known_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
           gerrit-change-number: ${{ inputs.GERRIT_CHANGE_NUMBER }}
           gerrit-patchset-number: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
