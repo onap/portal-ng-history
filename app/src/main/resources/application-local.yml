@@ -12,9 +12,10 @@ spring:
     show-sql: true
 
 management:
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    export:
+      zipkin:
+        endpoint: http://localhost:9411/api/v2/spans
 
 logger:
   traceIdHeaderName: x-b3-traceid

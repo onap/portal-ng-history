@@ -61,9 +61,12 @@ management:
       enabled: true
   tracing:
     export:
-      enabled: true
+      enabled: ${TRACING_ENABLED:true}
       zipkin:
-        endpoint: ${COLLECTOR_HOST}:${COLLECTOR_PORT}/api/v2/spans
+        # Endpoint defaults are needed even when export is disabled: Boot resolves this
+        # placeholder while evaluating the exporter's condition, so an unset
+        # COLLECTOR_HOST fails startup.
+        endpoint: ${COLLECTOR_HOST:http://localhost}:${COLLECTOR_PORT:9411}/api/v2/spans
     sampling:
       probability: 1.0 # sample every request
 
