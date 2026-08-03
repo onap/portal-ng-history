@@ -80,7 +80,7 @@ jobs:
     permissions:
       contents: read  # composed-gradle-nexus-iq only checks out code
     # yamllint disable-line rule:line-length
-    uses: lfit/releng-reusable-workflows/.github/workflows/composed-gradle-nexus-iq.yaml@5fa62e396473e823e2bb0f45b744e94c4f842faa  # v0.7.4
+    uses: lfit/releng-reusable-workflows/.github/workflows/composed-gradle-nexus-iq.yaml@0688b118b3290649e0cb3580612e6369b6509774  # v0.10.0
     with:
       GERRIT_BRANCH: ${{ inputs.GERRIT_BRANCH }}
       GERRIT_CHANGE_ID: ${{ inputs.GERRIT_CHANGE_ID }}
