@@ -78,21 +78,28 @@ jobs:
     name: Gradle build and Nexus IQ scan
     needs: prepare
     permissions:
-      contents: read  # composed-gradle-nexus-iq only checks out code
+      contents: read  # the CLM lane only checks out code
     # yamllint disable-line rule:line-length
-    uses: lfit/releng-reusable-workflows/.github/workflows/composed-gradle-nexus-iq.yaml@5fa62e396473e823e2bb0f45b744e94c4f842faa  # v0.7.4
+    uses: lfreleng-actions/security-workflows/.github/workflows/sonatype-lifecycle.yaml@5882f138dd24fcd6cb4ebc8bb3a68cee45a437a6  # v0.3.0
     with:
-      GERRIT_BRANCH: ${{ inputs.GERRIT_BRANCH }}
-      GERRIT_CHANGE_ID: ${{ inputs.GERRIT_CHANGE_ID }}
-      GERRIT_CHANGE_NUMBER: ${{ inputs.GERRIT_CHANGE_NUMBER }}
-      GERRIT_CHANGE_URL: ${{ inputs.GERRIT_CHANGE_URL }}
-      GERRIT_EVENT_TYPE: ${{ inputs.GERRIT_EVENT_TYPE }}
-      GERRIT_PATCHSET_NUMBER: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
-      GERRIT_PATCHSET_REVISION: ${{ inputs.GERRIT_PATCHSET_REVISION }}
-      GERRIT_PROJECT: ${{ inputs.GERRIT_PROJECT }}
-      GERRIT_REFSPEC: ${{ inputs.GERRIT_REFSPEC }}
+      gerrit_refspec: ${{ inputs.GERRIT_REFSPEC }}
+      gerrit_project: ${{ inputs.GERRIT_PROJECT }}
+      gerrit_branch: ${{ inputs.GERRIT_BRANCH }}
+      # Build before scanning so Nexus IQ sees resolved dependencies.
+      # The lane runs the build inside the scan job, so the two share a
+      # workspace; the predecessor ran them in separate jobs and the
+      # scan never saw the build output.
+      build_type: gradle
+      # JDK that runs Gradle itself, not the one the code targets:
+      # Gradle 8.14 does not run on the Java 25 toolchain declared in
+      # app/build.gradle, which foojay-resolver auto-provisions instead.
+      java_version: '17'
+      # Gradle resolves plugins, dependencies and the Java 25 toolchain
+      # from CDNs that are impractical to enumerate in the egress
+      # allow-list; audit the job rather than blocking it.
+      build_permit_egress_traffic: true
     secrets:
-      NEXUS_IQ_PASSWORD: ${{ secrets.NEXUS_IQ_PASSWORD }}
+      nexus_iq_password: ${{ secrets.NEXUS_IQ_PASSWORD }}
 
   vote:
     name: Report Gerrit vote
