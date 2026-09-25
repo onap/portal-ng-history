@@ -1,0 +1,9 @@
+---
+distribution_type: container
+container_release_tag: 0.4.0
+project: portal-ng/history
+log_dir: portal-ng-history-docker-merge-master/243/
+ref: 73c7389dd1a4a0e9d8549aad9d5a5a4fcbfabf2b
+containers:
+    - name: portal-ng/history
+      version: 0.4.0-20260925T0802
