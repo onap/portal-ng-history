@@ -46,7 +46,12 @@ public class SchedulerConfig {
    */
   @Scheduled(cron = "${history.delete-interval}")
   public void runDeleteActions() {
-    actionsService.deleteActions(historyConfig.getSaveInterval());
-    log.info("Delete actions in scheduled job");
+    Integer saveInterval = historyConfig.getSaveInterval();
+    try {
+      Long deleted = actionsService.deleteActions(saveInterval).block();
+      log.info("Scheduled job deleted {} actions older than {} hours", deleted, saveInterval);
+    } catch (RuntimeException e) {
+      log.error("Scheduled job failed to delete actions older than {} hours", saveInterval, e);
+    }
   }
 }

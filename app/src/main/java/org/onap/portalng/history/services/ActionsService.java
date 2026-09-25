@@ -22,10 +22,10 @@
 package org.onap.portalng.history.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -173,25 +173,16 @@ public class ActionsService {
   }
 
   /**
-   * Delete actions after hours. This service will be used in the cron job. The job will be
-   * implemented with a separate user story.
+   * Delete the actions of all users that are older than the given number of hours. Used by the
+   * scheduled retention cleanup.
    *
    * @param deleteAfterHours hours after the actions should be deleted
-   * @return If successful empty Mono object, otherwise Mono error
+   * @return the number of deleted actions, otherwise Mono error
    */
-  public Mono<Object> deleteActions(Integer deleteAfterHours) {
-    var dateAfter =
-        Date.from(
-            LocalDateTime.now().minusHours(deleteAfterHours).atZone(ZoneId.of("CET")).toInstant());
-    return Mono.fromCallable(() -> repository.deleteAllByActionCreatedAtIsBefore(dateAfter))
-        .subscribeOn(Schedulers.boundedElastic())
-        .map(resp -> new Object())
-        .onErrorResume(
-            ProblemException.class,
-            ex -> {
-              Logger.errorLog("Delete all actions in cron job cannot be executed ", null);
-              return getError("Delete all actions after hours cannot be executed");
-            });
+  public Mono<Long> deleteActions(Integer deleteAfterHours) {
+    var dateBefore = Date.from(Instant.now().minus(deleteAfterHours, ChronoUnit.HOURS));
+    return Mono.fromCallable(() -> repository.deleteAllByActionCreatedAtIsBefore(dateBefore))
+        .subscribeOn(Schedulers.boundedElastic());
   }
 
   /**
