@@ -45,7 +45,11 @@ public class SecurityConfig {
         .authorizeExchange(
             exchange ->
                 exchange
-                    .pathMatchers(HttpMethod.GET, "/actuator/**")
+                    .pathMatchers(
+                        HttpMethod.GET,
+                        "/actuator/health/**",
+                        "/actuator/info",
+                        "/actuator/prometheus")
                     .permitAll()
                     .anyExchange()
                     .authenticated())
