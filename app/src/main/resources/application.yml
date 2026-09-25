@@ -6,12 +6,9 @@ spring:
   application:
     name: ${APPLICATION_NAME:portal-ng-history}
   jackson:
-    # Boot 4 defaults to Jackson 3; keep Boot-3 Jackson 2 conventions for the
-    # Jackson2ObjectMapperBuilder-built mapper used with Zalando ProblemModule.
-    use-jackson2-defaults: true
-    serialization:
-      # needed for serializing objects of type object
-      fail-on-empty-beans: false
+    default-property-inclusion: non_null
+    mapper:
+      sort-properties-alphabetically: false
   security:
     oauth2:
       resourceserver:
@@ -38,6 +35,10 @@ spring:
           lob:
             non_contextual_creation: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        type:
+          # ActionsDao.action is a Jackson 3 JsonNode, but Hibernate picks its Jackson 2 mapper
+          # whenever jackson-databind 2 is on the classpath, and that one cannot read it.
+          json_format_mapper: jackson3
   liquibase:
     change-log: "classpath:/db/changelog.xml"
   reactor:

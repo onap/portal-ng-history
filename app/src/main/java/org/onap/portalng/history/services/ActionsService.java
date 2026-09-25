@@ -21,7 +21,6 @@
 
 package org.onap.portalng.history.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Instant;
@@ -44,11 +43,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import tools.jackson.databind.ObjectMapper;
 
 @Transactional
 @RequiredArgsConstructor
@@ -117,12 +115,9 @@ public class ActionsService {
             ex -> {
               Logger.errorLog("Action for user can not be executed for user with id ", userId);
               return Mono.error(
-                  ProblemException.builder()
-                      .type(Problem.DEFAULT_TYPE)
-                      .status(Status.BAD_REQUEST)
-                      .title(HttpStatus.BAD_REQUEST.toString())
-                      .detail("Action for user can not be executed for user with id " + userId)
-                      .build());
+                  new ProblemException(
+                      HttpStatus.BAD_REQUEST,
+                      "Action for user can not be executed for user with id " + userId));
             });
   }
 
@@ -255,12 +250,6 @@ public class ActionsService {
    * @return Mono error with problem exception
    */
   private Mono<ActionsListResponseApiDto> getError(String message) {
-    return Mono.error(
-        ProblemException.builder()
-            .type(Problem.DEFAULT_TYPE)
-            .status(Status.BAD_REQUEST)
-            .title(HttpStatus.BAD_REQUEST.toString())
-            .detail(message)
-            .build());
+    return Mono.error(new ProblemException(HttpStatus.BAD_REQUEST, message));
   }
 }

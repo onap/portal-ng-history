@@ -34,7 +34,6 @@ configurations {
 }
 
 ext {
-  problemVersion = '0.27.1'
   swaggerAnnotationsVersion = '2.2.51'
   datasourceMicrometerVersion = '2.2.1'
 }
@@ -54,12 +53,6 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-webflux'
   implementation 'org.springframework.boot:spring-boot-starter-validation'
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-  implementation "org.zalando:problem:$problemVersion"
-  implementation "org.zalando:jackson-datatype-problem:$problemVersion"
-
-  // Boot 4 defaults to Jackson 3; this bridge keeps the Jackson 2 API on the classpath
-  // because Zalando jackson-datatype-problem (ProblemModule) has no Jackson 3 release.
-  implementation 'org.springframework.boot:spring-boot-jackson2'
 
   // Boot 4 modularized Liquibase auto-config out of the core starter.
   implementation 'org.springframework.boot:spring-boot-starter-liquibase'

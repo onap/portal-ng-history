@@ -24,8 +24,6 @@ package org.onap.portalng.history;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
@@ -47,6 +45,8 @@ import org.springframework.security.test.web.reactive.server.SecurityMockServerC
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(OutputCaptureExtension.class)
@@ -121,17 +121,17 @@ class TracingIntegrationTest {
 
     List<JsonNode> requestLines =
         logLines(output).stream()
-            .filter(line -> REQUEST_ID.equals(line.path("request_id").asText()))
+            .filter(line -> REQUEST_ID.equals(line.path("request_id").asString()))
             .toList();
 
     assertThat(requestLines)
-        .extracting(line -> line.path("message").asText())
+        .extracting(line -> line.path("message").asString())
         .contains("RECEIVED", "FINISHED");
     assertThat(requestLines)
         .allSatisfy(
             line -> {
-              assertThat(line.path("trace_id").asText()).isEqualTo(TRACE_ID);
-              assertThat(line.path("span_id").asText()).matches("[0-9a-f]{16}");
+              assertThat(line.path("trace_id").asString()).isEqualTo(TRACE_ID);
+              assertThat(line.path("span_id").asString()).matches("[0-9a-f]{16}");
             });
   }
 
@@ -179,8 +179,8 @@ class TracingIntegrationTest {
     return spans.stream()
         .anyMatch(
             span ->
-                traceId.equals(span.path("traceId").asText())
-                    && name.equals(span.path("name").asText()));
+                traceId.equals(span.path("traceId").asString())
+                    && name.equals(span.path("name").asString()));
   }
 
   private List<JsonNode> logLines(CapturedOutput output) {

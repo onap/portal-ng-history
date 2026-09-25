@@ -21,79 +21,54 @@
 
 package org.onap.portalng.history.configuration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.onap.portalng.history.exception.ProblemException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webflux.error.ErrorWebExceptionHandler;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
+@RequiredArgsConstructor
 public class Errorhandler implements ErrorWebExceptionHandler {
 
-  @Autowired ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
   /**
-   * Override the handle methode to implement custom error handling Set response status code to BAD
-   * REQUEST, set header content-type and fill the body with the Problem object along the API model
+   * Renders the exception as an {@code application/problem+json} body. A {@link ProblemException}
+   * keeps its own status and body. Any other exception is answered with HTTP 400 and a body whose
+   * {@code status} is 500: bff has always received that combination, so do not align the two.
    */
   @Override
   public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
     ServerHttpResponse httpResponse = exchange.getResponse();
-    setResponseStatus(httpResponse, ex);
-    httpResponse.getHeaders().add("Content-Type", "application/problem+json");
+    ProblemDetail problemDetail;
+    if (ex instanceof ProblemException problemException) {
+      httpResponse.setStatusCode(problemException.getStatusCode());
+      problemDetail = problemException.getBody();
+    } else {
+      httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
+      problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+      problemDetail.setTitle(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+      problemDetail.setDetail(ex.getMessage());
+    }
+    httpResponse.getHeaders().setContentType(MediaType.APPLICATION_PROBLEM_JSON);
     return httpResponse.writeWith(
         Mono.fromSupplier(
             () -> {
               DataBufferFactory bufferFactory = httpResponse.bufferFactory();
               try {
-                return (httpResponse.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR)
-                    ? httpResponse
-                        .bufferFactory()
-                        .wrap(
-                            objectMapper.writeValueAsBytes(
-                                setProblemException(httpResponse, ex.getMessage())))
-                    : httpResponse.bufferFactory().wrap(objectMapper.writeValueAsBytes(ex));
-              } catch (JsonProcessingException e) {
+                return bufferFactory.wrap(objectMapper.writeValueAsBytes(problemDetail));
+              } catch (JacksonException e) {
                 return bufferFactory.wrap(new byte[0]);
               }
             }));
-  }
-
-  /**
-   * Set the response status
-   *
-   * @param httpResponse response which status code should be set
-   * @param ex throwable exception to identify the Problem class
-   */
-  private void setResponseStatus(ServerHttpResponse httpResponse, Throwable ex) {
-    if (ex instanceof Problem) {
-      httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
-    } else {
-      httpResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  /**
-   * Build a problem exception and set the response status code to BAD REQUEST for every response
-   *
-   * @param httpResponse response which status code should be set
-   * @param message for the detail of the problem exception
-   * @return problem exception instance
-   */
-  private ProblemException setProblemException(ServerHttpResponse httpResponse, String message) {
-    httpResponse.setStatusCode(HttpStatus.BAD_REQUEST);
-    return ProblemException.builder()
-        .status(Status.INTERNAL_SERVER_ERROR)
-        .title(Status.INTERNAL_SERVER_ERROR.getReasonPhrase())
-        .detail(message)
-        .build();
   }
 }

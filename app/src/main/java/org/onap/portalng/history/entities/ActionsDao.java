@@ -21,7 +21,6 @@
 
 package org.onap.portalng.history.entities;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -31,6 +30,7 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Data access object for the actions in the MongoDB repository. No database id is set in this class

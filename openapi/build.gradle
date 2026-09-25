@@ -24,7 +24,8 @@ openApiGenerate {
     useTags: "true",
     useOptional: "true",
     reactive: "true",
-    useSpringBoot3: "true"
+    useSpringBoot4: "true",
+    useJackson3: "true"
   ]
   generateApiTests = false
   generateApiDocumentation = false

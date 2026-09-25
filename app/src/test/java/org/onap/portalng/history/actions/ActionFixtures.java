@@ -21,13 +21,13 @@
 
 package org.onap.portalng.history.actions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.onap.portalng.history.entities.ActionsDao;
 import org.onap.portalng.history.openapi.model.CreateActionRequestApiDto;
+import tools.jackson.databind.ObjectMapper;
 
 public class ActionFixtures {
 

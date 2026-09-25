@@ -21,32 +21,14 @@
 
 package org.onap.portalng.history.configuration;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.Clock;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.zalando.problem.jackson.ProblemModule;
 
 @Configuration
 public class BeansConfig {
   @Bean
   Clock clock() {
     return Clock.systemUTC();
-  }
-
-  @Bean
-  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-    return builder
-        .modules(new ProblemModule(), new JavaTimeModule())
-        .build()
-        // needed for serializing objects of type Object (e.g. empty delete responses);
-        // this mapper also backs the WebFlux Jackson 2 codec (see WebFluxCodecConfig), so the
-        // property spring.jackson.serialization.fail-on-empty-beans no longer covers it.
-        .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-        .setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }
 }
