@@ -59,6 +59,12 @@ management:
       enabled: true
     java:
       enabled: true
+  observations:
+    enable:
+      spring:
+        # Security observations carry no URI, so TracingConfig cannot filter them per path:
+        # re-enabling this brings back orphaned security spans for every probe and scrape.
+        security: false
   tracing:
     export:
       enabled: ${TRACING_ENABLED:true}
