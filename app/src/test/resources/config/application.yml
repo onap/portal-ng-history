@@ -1,0 +1,27 @@
+# Overlays src/main/resources/application.yml instead of replacing it: Boot loads
+# classpath:/config/application.yml after classpath:/application.yml, so only test-specific
+# values belong here and the production settings stay under test.
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # this value needs to be set for SpringBoot Context, but the tests us mockJwt so it doesn't need to be a valid address
+          jwk-set-uri: http://localhost
+  datasource:
+    url: jdbc:tc:postgresql:///history
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+
+history:
+  delete-interval: '0 0 0 1 1 *'
+
+management:
+  tracing:
+    export:
+      enabled: false
+
+logger:
+  traceIdHeaderName: x-b3-traceid
