@@ -25,7 +25,7 @@ import lombok.Getter;
 
 @Getter
 public enum LogContextVariable {
-  TRACE_ID("trace_id"),
+  REQUEST_ID("request_id"),
   STATUS("status"),
   NORTHBOUND_METHOD("northbound.method"),
   NORTHBOUND_URL("northbound.url"),

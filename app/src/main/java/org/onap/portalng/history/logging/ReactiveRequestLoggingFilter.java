@@ -23,9 +23,11 @@ package org.onap.portalng.history.logging;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -47,31 +49,42 @@ public class ReactiveRequestLoggingFilter implements WebFilter {
     }
 
     var logMessageMetadata =
-        WebExchangeUtils.getRequestMetadata(exchange, loggerProperties.traceIdHeaderName());
+        WebExchangeUtils.getRequestMetadata(exchange, loggerProperties.requestIdHeaderName());
 
     LoggingHelper.info(log, logMessageMetadata, "RECEIVED");
 
     var invocationStart = LocalDateTime.now();
     return chain
         .filter(exchange)
-        .doOnTerminate(
-            () -> {
-              logMessageMetadata.put(
-                  LogContextVariable.STATUS,
-                  exchange.getResponse().getStatusCode().isError()
-                      ? StatusCode.ERROR.name()
-                      : StatusCode.COMPLETE.name());
-              logMessageMetadata.put(
-                  LogContextVariable.HTTP_STATUS,
-                  String.valueOf(exchange.getResponse().getStatusCode().value()));
-              logMessageMetadata.put(
-                  LogContextVariable.EXECUTION_TIME,
-                  String.valueOf(
-                      Duration.between(invocationStart, LocalDateTime.now()).toMillis()));
+        .doOnSuccess(
+            res -> {
+              addOutcome(logMessageMetadata, exchange, invocationStart, false);
+              LoggingHelper.info(log, logMessageMetadata, "FINISHED");
             })
-        .doOnSuccess(res -> LoggingHelper.info(log, logMessageMetadata, "FINISHED"))
         .doOnError(
-            ex -> LoggingHelper.warn(log, logMessageMetadata, "FAILED: {}", ex.getMessage()));
+            ex -> {
+              addOutcome(logMessageMetadata, exchange, invocationStart, true);
+              LoggingHelper.warn(log, logMessageMetadata, "FAILED: {}", ex.getMessage());
+            });
+  }
+
+  // On error the status is still unset here: the ErrorWebExceptionHandler that sets it runs
+  // after the filter chain.
+  private static void addOutcome(
+      Map<LogContextVariable, String> metadata,
+      ServerWebExchange exchange,
+      LocalDateTime invocationStart,
+      boolean failed) {
+    HttpStatusCode statusCode = exchange.getResponse().getStatusCode();
+    boolean error = failed || (statusCode != null && statusCode.isError());
+    metadata.put(
+        LogContextVariable.STATUS, error ? StatusCode.ERROR.name() : StatusCode.COMPLETE.name());
+    if (statusCode != null) {
+      metadata.put(LogContextVariable.HTTP_STATUS, String.valueOf(statusCode.value()));
+    }
+    metadata.put(
+        LogContextVariable.EXECUTION_TIME,
+        String.valueOf(Duration.between(invocationStart, LocalDateTime.now()).toMillis()));
   }
 
   private boolean loggingDisabled(ServerWebExchange exchange) {

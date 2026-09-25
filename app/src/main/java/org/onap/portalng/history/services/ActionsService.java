@@ -22,6 +22,8 @@
 package org.onap.portalng.history.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -54,8 +56,12 @@ import reactor.core.scheduler.Schedulers;
 @Service
 public class ActionsService {
 
+  private static final String SAVED_METRIC = "history.actions.saved";
+  private static final String DELETED_METRIC = "history.actions.deleted";
+
   private final ActionsRepository repository;
   private final ObjectMapper objectMapper;
+  private final MeterRegistry meterRegistry;
 
   /**
    * Retrieve actions for a given userId from the database and provide a list with actions
@@ -105,6 +111,8 @@ public class ActionsService {
     return Mono.fromCallable(() -> repository.save(toActionsDao(userId, createActionRequest)))
         .subscribeOn(Schedulers.boundedElastic())
         .map(action -> toActionResponse(action, saveInterval))
+        .doOnNext(action -> countSaved("success"))
+        .doOnError(ex -> countSaved("failure"))
         .onErrorResume(
             ex -> {
               Logger.errorLog("Action for user can not be executed for user with id ", userId);
@@ -163,6 +171,7 @@ public class ActionsService {
     return Mono.fromCallable(
             () -> repository.deleteAllByUserIdAndActionCreatedAtIsBefore(userId, dateAfter))
         .subscribeOn(Schedulers.boundedElastic())
+        .doOnNext(deleted -> countDeleted("user", deleted))
         .map(resp -> new Object())
         .onErrorResume(
             ProblemException.class,
@@ -182,7 +191,24 @@ public class ActionsService {
   public Mono<Long> deleteActions(Integer deleteAfterHours) {
     var dateBefore = Date.from(Instant.now().minus(deleteAfterHours, ChronoUnit.HOURS));
     return Mono.fromCallable(() -> repository.deleteAllByActionCreatedAtIsBefore(dateBefore))
-        .subscribeOn(Schedulers.boundedElastic());
+        .subscribeOn(Schedulers.boundedElastic())
+        .doOnNext(deleted -> countDeleted("retention", deleted));
+  }
+
+  private void countSaved(String outcome) {
+    Counter.builder(SAVED_METRIC)
+        .description("Actions stored, by outcome")
+        .tag("outcome", outcome)
+        .register(meterRegistry)
+        .increment();
+  }
+
+  private void countDeleted(String trigger, long deleted) {
+    Counter.builder(DELETED_METRIC)
+        .description("Actions deleted, by what triggered the deletion")
+        .tag("trigger", trigger)
+        .register(meterRegistry)
+        .increment(deleted);
   }
 
   /**

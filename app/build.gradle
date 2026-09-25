@@ -36,6 +36,7 @@ configurations {
 ext {
   problemVersion = '0.27.1'
   swaggerAnnotationsVersion = '2.2.51'
+  datasourceMicrometerVersion = '2.2.1'
 }
 
 repositories {
@@ -75,6 +76,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-micrometer-tracing'
   implementation 'org.springframework.boot:spring-boot-micrometer-tracing-opentelemetry'
   implementation 'io.micrometer:micrometer-registry-prometheus'
+  implementation "net.ttddyy.observation:datasource-micrometer-spring-boot:$datasourceMicrometerVersion"
 
   compileOnly 'org.projectlombok:lombok'
   compileOnly "io.swagger.core.v3:swagger-annotations-jakarta:$swaggerAnnotationsVersion"

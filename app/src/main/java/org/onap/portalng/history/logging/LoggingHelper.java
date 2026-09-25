@@ -61,7 +61,10 @@ public class LoggingHelper {
       String message,
       Object... args) {
     metadata.forEach((variable, value) -> MDC.put(variable.getVariableName(), value));
-    logMethod.accept(message, args);
-    MDC.clear();
+    try {
+      logMethod.accept(message, args);
+    } finally {
+      metadata.keySet().forEach(variable -> MDC.remove(variable.getVariableName()));
+    }
   }
 }

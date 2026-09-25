@@ -19,11 +19,22 @@
  *
  */
 
-package org.onap.portalng.history.logging;
+package org.onap.portalng.history.util;
 
-import java.util.List;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@ConfigurationProperties("logger")
-public record LoggerProperties(
-    String requestIdHeaderName, Boolean enabled, List<String> excludePaths) {}
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+
+@ExtendWith(OutputCaptureExtension.class)
+class LoggerTest {
+
+  @Test
+  void thatErrorsAreLoggedAtErrorLevel(CapturedOutput output) {
+    Logger.errorLog("Get actions cannot be executed for user with id ", "user");
+
+    assertThat(output).contains("History - error").contains("ERROR");
+  }
+}

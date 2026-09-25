@@ -57,6 +57,6 @@ public class Logger {
    * @param id of the related object of the message
    */
   public static void errorLog(String msg, String id) {
-    log.info("History - error - {} {} not found", msg, id);
+    log.error("History - error - {} {} not found", msg, id);
   }
 }

@@ -40,6 +40,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     change-log: "classpath:/db/changelog.xml"
+  reactor:
+    context-propagation: auto
 
 history:
   save-interval: 72
@@ -74,10 +76,10 @@ management:
         # COLLECTOR_HOST fails startup.
         endpoint: ${COLLECTOR_HOST:http://localhost}:${COLLECTOR_PORT:9411}/api/v2/spans
     sampling:
-      probability: 1.0 # sample every request
+      probability: ${TRACING_SAMPLING_PROBABILITY:1.0}
 
 logger:
-  traceIdHeaderName: ${TRACE_ID_HEADER_NAME}
+  requestIdHeaderName: ${REQUEST_ID_HEADER_NAME:X-Request-Id}
   enabled: true
   excludePaths:
     - "/actuator/**"
@@ -86,5 +88,9 @@ logging:
   structured:
     format:
       console: logstash
+    json:
+      rename:
+        traceId: trace_id
+        spanId: span_id
   level:
     root: info

@@ -23,6 +23,7 @@ package org.onap.portalng.history;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -42,6 +43,7 @@ class ScheduledCleanupIntegrationTest {
 
   @Autowired private SchedulerConfig schedulerConfig;
   @Autowired private ActionsRepository actionsRepository;
+  @Autowired private MeterRegistry meterRegistry;
 
   @BeforeEach
   void setup() {
@@ -62,5 +64,18 @@ class ScheduledCleanupIntegrationTest {
     assertThat(actionsRepository.findAll())
         .extracting(ActionsDao::getUserId)
         .containsExactlyInAnyOrder("retained", "retained", "retained");
+  }
+
+  @Test
+  void thatScheduledDeletionsAreCounted() {
+    final var now = OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
+    actionsRepository.saveAll(
+        ActionFixtures.actionsDaoListHourOffsetOnly(2, "expired", now.minusHours(72)));
+    final var deleted = meterRegistry.counter("history.actions.deleted", "trigger", "retention");
+    final var before = deleted.count();
+
+    schedulerConfig.runDeleteActions();
+
+    assertThat(deleted.count() - before).isEqualTo(2);
   }
 }

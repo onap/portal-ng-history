@@ -32,22 +32,22 @@ import org.springframework.web.server.ServerWebExchange;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebExchangeUtils {
-  private static final String DEFAULT_TRACE_ID = "REQUEST_ID_IS_NOT_SET";
+  private static final String DEFAULT_REQUEST_ID = "REQUEST_ID_IS_NOT_SET";
   private static final String DEFAULT_REQUEST_URL = "REQUEST_URL_IS_ABSENT";
   private static final String DEFAULT_REQUEST_METHOD = "HTTP_METHOD_IS_ABSENT";
 
   private static final PathMatcher pathMatcher = new AntPathMatcher();
 
-  public static String getRequestId(ServerWebExchange webExchange, String traceIdHeaderName) {
-    if (webExchange == null || traceIdHeaderName == null) {
-      return DEFAULT_TRACE_ID;
+  public static String getRequestId(ServerWebExchange webExchange, String requestIdHeaderName) {
+    if (webExchange == null || requestIdHeaderName == null) {
+      return DEFAULT_REQUEST_ID;
     }
 
-    var requestIdHeaders = webExchange.getRequest().getHeaders().get(traceIdHeaderName);
+    var requestIdHeaders = webExchange.getRequest().getHeaders().get(requestIdHeaderName);
     if (requestIdHeaders != null) {
-      return requestIdHeaders.stream().findAny().orElse(DEFAULT_TRACE_ID);
+      return requestIdHeaders.stream().findAny().orElse(DEFAULT_REQUEST_ID);
     } else {
-      return DEFAULT_TRACE_ID;
+      return DEFAULT_REQUEST_ID;
     }
   }
 
@@ -75,13 +75,13 @@ public class WebExchangeUtils {
   }
 
   public static Map<LogContextVariable, String> getRequestMetadata(
-      ServerWebExchange exchange, String traceIdHeaderName) {
-    var traceId = WebExchangeUtils.getRequestId(exchange, traceIdHeaderName);
+      ServerWebExchange exchange, String requestIdHeaderName) {
+    var requestId = WebExchangeUtils.getRequestId(exchange, requestIdHeaderName);
     var requestMethod = WebExchangeUtils.getRequestHttpMethod(exchange);
     var requestUrl = WebExchangeUtils.getRequestUrl(exchange);
 
     var logMessageMetadata = new EnumMap<LogContextVariable, String>(LogContextVariable.class);
-    logMessageMetadata.put(LogContextVariable.TRACE_ID, traceId);
+    logMessageMetadata.put(LogContextVariable.REQUEST_ID, requestId);
     logMessageMetadata.put(LogContextVariable.STATUS, StatusCode.REQUEST.name());
     logMessageMetadata.put(LogContextVariable.NORTHBOUND_METHOD, requestMethod);
     logMessageMetadata.put(LogContextVariable.NORTHBOUND_URL, requestUrl);

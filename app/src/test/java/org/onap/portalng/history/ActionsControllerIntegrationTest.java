@@ -31,6 +31,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.onap.portalng.history.actions.ActionDto;
@@ -47,6 +49,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -707,5 +710,69 @@ class ActionsControllerIntegrationTest {
     assertEquals(10, responseUser.getTotalCount());
     assertEquals(8, responseUser2.getTotalCount());
     assertEquals(5, responseUser3.getTotalCount());
+  }
+
+  @Test
+  void thatSavedAndDeletedActionsAreCounted() {
+    final ActionDto actionDto = new ActionDto();
+    actionDto.setType("instantiation");
+    actionDto.setAction("create");
+    final CreateActionRequestApiDto actionRequest =
+        new CreateActionRequestApiDto()
+            .actionCreatedAt(OffsetDateTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS))
+            .userId("user")
+            .action(actionDto);
+    actionsRepository.saveAll(
+        ActionFixtures.actionsDaoListHourOffsetOnly(
+            3, "user", OffsetDateTime.now(ZoneOffset.UTC).minusHours(10)));
+    final var before = scrapeMetrics();
+
+    webTestClient
+        .mutateWith(SecurityMockServerConfigurers.mockJwt().jwt(jwt -> jwt.claim("sub", "user")))
+        .post()
+        .uri("/v1/actions/user")
+        .body(Mono.just(actionRequest), CreateActionRequestApiDto.class)
+        .exchange()
+        .expectStatus()
+        .isOk();
+    webTestClient
+        .mutateWith(SecurityMockServerConfigurers.mockJwt().jwt(jwt -> jwt.claim("sub", "user")))
+        .delete()
+        .uri(
+            uriBuilder ->
+                uriBuilder.path("/v1/actions/user").queryParam("deleteAfterHours", 2).build())
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+    final var after = scrapeMetrics();
+    assertEquals(
+        1,
+        counter(after, "history_actions_saved_total", "outcome", "success")
+            - counter(before, "history_actions_saved_total", "outcome", "success"));
+    assertEquals(
+        3,
+        counter(after, "history_actions_deleted_total", "trigger", "user")
+            - counter(before, "history_actions_deleted_total", "trigger", "user"));
+  }
+
+  private String scrapeMetrics() {
+    return webTestClient
+        .get()
+        .uri("/actuator/prometheus")
+        .accept(MediaType.TEXT_PLAIN)
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(String.class)
+        .returnResult()
+        .getResponseBody();
+  }
+
+  private static double counter(String metrics, String name, String tag, String value) {
+    Matcher matcher =
+        Pattern.compile("^%s\\{%s=\"%s\"} (\\S+)$".formatted(name, tag, value), Pattern.MULTILINE)
+            .matcher(metrics);
+    return matcher.find() ? Double.parseDouble(matcher.group(1)) : 0;
   }
 }
