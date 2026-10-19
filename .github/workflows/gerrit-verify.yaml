@@ -80,7 +80,7 @@ jobs:
     permissions:
       contents: read  # the CLM lane only checks out code
     # yamllint disable-line rule:line-length
-    uses: lfreleng-actions/security-workflows/.github/workflows/sonatype-lifecycle.yaml@4da5165382f8ca9b5ef0270caa343be4a63493d5  # v0.9.2
+    uses: lfreleng-actions/security-workflows/.github/workflows/sonatype-lifecycle.yaml@179b57cc41fbdae90d68237b418539d33e5ba091  # v0.9.4
     with:
       gerrit_refspec: ${{ inputs.GERRIT_REFSPEC }}
       gerrit_project: ${{ inputs.GERRIT_PROJECT }}
